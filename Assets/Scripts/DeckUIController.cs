@@ -19,11 +19,12 @@ public class DeckUIController : MonoBehaviour
         drawPileButton.onClick.AddListener(OnDrawClicked);
         discardPileButton.onClick.AddListener(OnDiscardClicked);
     }
-
     private void Update()
     {
-        discardText.text = deck.PeekTopDiscard() ?? "Empty";
-        drawnCardText.text = "Drawn: (none)";
+        if (deck == null) return;
+
+        discardText.text = $"Discard: {deck.PeekTopDiscard() ?? "Empty"}";
+        // Optionally: maintain previous drawn card instead of overwriting
     }
 
     private void OnDrawClicked()
@@ -31,10 +32,20 @@ public class DeckUIController : MonoBehaviour
         string drawn = deck.DrawCard();
         drawnCardText.text = $"Drawn: {drawn}";
     }
+    public void UpdateDrawnCardText(string cardValue)
+    {
+        drawnCardText.text = $"Drawn: {cardValue}";
+    }
 
     private void OnDiscardClicked()
     {
         string top = deck.PeekTopDiscard();
         drawnCardText.text = $"Drawn: {top}";
     }
+
+    public void UpdateDiscardText(string cardValue)
+    {
+        discardText.text = $"Discard: {cardValue}";
+    }
+
 }

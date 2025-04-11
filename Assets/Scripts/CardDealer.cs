@@ -40,12 +40,18 @@ public class CardDealer : MonoBehaviour
     private void FlipRandomCards(ICardGrid grid, int count)
     {
         var cards = grid.GetCardModels();
-        var indices = new List<int> { 0, 1, 2, 3, 4, 5 };
-        for (int i = 0; i < count; i++)
+        var shuffled = new List<CardModel>(cards);
+        for (int i = 0; i < shuffled.Count; i++)
         {
-            int idx = indices[Random.Range(0, indices.Count)];
-            indices.Remove(idx);
-            cards[idx].IsFaceUp = true;
+            var temp = shuffled[i];
+            int randomIndex = Random.Range(i, shuffled.Count);
+            shuffled[i] = shuffled[randomIndex];
+            shuffled[randomIndex] = temp;
+        }
+
+        for (int i = 0; i < count && i < shuffled.Count; i++)
+        {
+            shuffled[i].IsFaceUp = true;
         }
     }
 
