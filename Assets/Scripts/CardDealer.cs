@@ -39,9 +39,8 @@ public class CardDealer : MonoBehaviour
 
     private void FlipRandomCards(ICardGrid grid, int count)
     {
-        var cards = grid.GetCardModels();
+        var models = grid.GetCardModels();
         var controllers = grid.GetCardControllers();
-
         var indices = new List<int> { 0, 1, 2, 3, 4, 5 };
 
         for (int i = 0; i < count && indices.Count > 0; i++)
@@ -49,8 +48,8 @@ public class CardDealer : MonoBehaviour
             int idx = indices[Random.Range(0, indices.Count)];
             indices.Remove(idx);
 
-            cards[idx].IsFaceUp = true;
-            controllers[idx].FlipCard(); // 🔁 triggers visual update
+            models[idx].IsFaceUp = true;
+            controllers[idx].FlipCard(); // 🔁 Visually flip the card
         }
     }
 
