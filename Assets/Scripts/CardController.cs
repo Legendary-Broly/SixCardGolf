@@ -22,7 +22,7 @@ public class CardController : MonoBehaviour
 
     public void FlipCard()
     {
-        Model.IsFaceUp = true;
+        // Just reapply the current visual state
         view.UpdateVisual(Model);
     }
 
