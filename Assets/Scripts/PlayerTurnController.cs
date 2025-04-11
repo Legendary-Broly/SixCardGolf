@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerTurnController : MonoBehaviour
 {
@@ -69,7 +69,11 @@ public class PlayerTurnController : MonoBehaviour
         if (hasDrawn || turnCoordinator.CurrentPhase != TurnPhase.DrawPhase) return;
 
         var model = grid.GetCardModels()[index];
-        if (model.IsFaceUp) return;
+        if (model.IsFaceUp)
+        {
+            Debug.Log($"[FlipCard] Ignored flip — Card at index {index} is already face-up.");
+            return;
+        }
 
         model.IsFaceUp = true;
         Debug.Log($"[FlipCard] Flipped card at index {index} - New Value: {model.Value}");
