@@ -21,5 +21,7 @@ public class CardView : MonoBehaviour
             cardFaceBackground.color = Color.gray;
             cardText.text = "";
         }
+
+        Debug.Log($"[CardView] Color set to: {cardFaceBackground.color} | Text: {cardText.text}");
     }
 }
