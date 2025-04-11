@@ -15,37 +15,37 @@ public class DeckUIController : MonoBehaviour
     private void Awake()
     {
         deck = deckRef as IDeckSystem;
-
         drawPileButton.onClick.AddListener(OnDrawClicked);
         discardPileButton.onClick.AddListener(OnDiscardClicked);
     }
+
     private void Update()
     {
         if (deck == null) return;
 
+        // Only update the discard pile text in real-time
         discardText.text = $"Discard: {deck.PeekTopDiscard() ?? "Empty"}";
-        // Optionally: maintain previous drawn card instead of overwriting
     }
 
     private void OnDrawClicked()
     {
         string drawn = deck.DrawCard();
-        drawnCardText.text = $"Drawn: {drawn}";
-    }
-    public void UpdateDrawnCardText(string cardValue)
-    {
-        drawnCardText.text = $"Drawn: {cardValue}";
+        UpdateDrawnCardText(drawn);
     }
 
     private void OnDiscardClicked()
     {
         string top = deck.PeekTopDiscard();
-        drawnCardText.text = $"Drawn: {top}";
+        UpdateDrawnCardText(top);
+    }
+
+    public void UpdateDrawnCardText(string cardValue)
+    {
+        drawnCardText.text = $"Drawn: {cardValue}";
     }
 
     public void UpdateDiscardText(string cardValue)
     {
         discardText.text = $"Discard: {cardValue}";
     }
-
 }
