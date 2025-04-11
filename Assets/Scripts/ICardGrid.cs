@@ -6,4 +6,6 @@ public interface ICardGrid
     void ReplaceCard(int index, string newValue);
     int FindHighestPointFaceUp();
     List<string> GetFlippedCardValues(); // 🔹 New for ScoreDisplay
+    List<CardController> GetCardControllers();
+
 }

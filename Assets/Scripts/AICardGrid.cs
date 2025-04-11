@@ -33,4 +33,9 @@ public class AICardGrid : MonoBehaviour, ICardGrid
             .Select(card => card.Model.Value)
             .ToList();
     }
+    public List<CardController> GetCardControllers()
+    {
+        return cardControllers;
+    }
+
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
 public class CardDealer : MonoBehaviour
@@ -40,18 +40,17 @@ public class CardDealer : MonoBehaviour
     private void FlipRandomCards(ICardGrid grid, int count)
     {
         var cards = grid.GetCardModels();
-        var shuffled = new List<CardModel>(cards);
-        for (int i = 0; i < shuffled.Count; i++)
-        {
-            var temp = shuffled[i];
-            int randomIndex = Random.Range(i, shuffled.Count);
-            shuffled[i] = shuffled[randomIndex];
-            shuffled[randomIndex] = temp;
-        }
+        var controllers = grid.GetCardControllers();
 
-        for (int i = 0; i < count && i < shuffled.Count; i++)
+        var indices = new List<int> { 0, 1, 2, 3, 4, 5 };
+
+        for (int i = 0; i < count && indices.Count > 0; i++)
         {
-            shuffled[i].IsFaceUp = true;
+            int idx = indices[Random.Range(0, indices.Count)];
+            indices.Remove(idx);
+
+            cards[idx].IsFaceUp = true;
+            controllers[idx].FlipCard(); // 🔁 triggers visual update
         }
     }
 
