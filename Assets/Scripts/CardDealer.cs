@@ -41,6 +41,7 @@ public class CardDealer : MonoBehaviour
     {
         var models = grid.GetCardModels();
         var controllers = grid.GetCardControllers();
+
         var indices = new List<int> { 0, 1, 2, 3, 4, 5 };
 
         for (int i = 0; i < count && indices.Count > 0; i++)
@@ -49,7 +50,7 @@ public class CardDealer : MonoBehaviour
             indices.Remove(idx);
 
             models[idx].IsFaceUp = true;
-            controllers[idx].FlipCard(); // 🔁 Visually flip the card
+            controllers[idx].FlipCard(); // 🔁 VISUAL flip
         }
     }
 
