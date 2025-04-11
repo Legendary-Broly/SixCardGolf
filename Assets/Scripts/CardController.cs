@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(CardView))]
@@ -23,11 +23,13 @@ public class CardController : MonoBehaviour, IPointerClickHandler
 
     public void FlipCard()
     {
+        // Always update visual — used after IsFaceUp is set externally
+        view.UpdateVisual(Model);
+
         if (!Model.IsFaceUp)
         {
             Model.IsFaceUp = true;
             Debug.Log($"[FlipCard] Flipping card with value: {Model.Value}");
-            view.UpdateVisual(Model);
         }
     }
 
