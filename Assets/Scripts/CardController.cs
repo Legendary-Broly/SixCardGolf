@@ -1,7 +1,8 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(CardView))]
-public class CardController : MonoBehaviour
+public class CardController : MonoBehaviour, IPointerClickHandler
 {
     public CardModel Model { get; private set; }
 
@@ -45,8 +46,9 @@ public class CardController : MonoBehaviour
 
     public bool IsFaceUp => Model != null && Model.IsFaceUp;
 
-    public void OnCardClicked()
+    public void OnPointerClick(PointerEventData eventData)
     {
+        Debug.Log($"[OnPointerClick] Card clicked and flipped. Now face up? {!IsFaceUp}");
         interactionHandler?.HandleCardClick(this);
     }
 }
