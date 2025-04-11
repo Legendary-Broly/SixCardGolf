@@ -54,6 +54,7 @@ public class AITurnController : MonoBehaviour
     private bool IsWorthReplacing(CardModel current, string drawn)
     {
         return current.IsFaceUp && drawn != null &&
-               ScoreCalculator.GetCardPoints(drawn) + 2 <= ScoreCalculator.GetCardPoints(current.Value);
+               ScoreCalculator.GetCardPointValue(drawn) + 2 <= ScoreCalculator.GetCardPointValue(current.Value);
     }
+
 }

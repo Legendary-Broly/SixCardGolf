@@ -9,15 +9,24 @@ public static class ScoreCalculator
         { "J", 11 }, { "Q", 12 }, { "K", 0 }, { "JOKER", -2 }
     };
 
-    public static int GetCardPoints(string value)
+    public static int GetCardPointValue(string value)
     {
         return CardPoints.TryGetValue(value, out var score) ? score : 99;
+    }
+
+    public static int CalculateScore(List<string> values)
+    {
+        int total = 0;
+        foreach (var value in values)
+        {
+            total += GetCardPointValue(value);
+        }
+        return total;
     }
 
     public static int GetGridScore(CardModel[] cards)
     {
         int score = 0;
-
         for (int col = 0; col < 3; col++)
         {
             var top = cards[col];
@@ -25,14 +34,14 @@ public static class ScoreCalculator
 
             if (top.IsFaceUp && bottom.IsFaceUp && top.Value == bottom.Value)
             {
-                // Matched column = 0
-                continue;
+                continue; // vertical match cancels
             }
 
             if (top.IsFaceUp)
-                score += GetCardPoints(top.Value);
+                score += GetCardPointValue(top.Value);
+
             if (bottom.IsFaceUp)
-                score += GetCardPoints(bottom.Value);
+                score += GetCardPointValue(bottom.Value);
         }
 
         return score;

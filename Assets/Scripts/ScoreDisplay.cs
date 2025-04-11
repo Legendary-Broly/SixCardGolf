@@ -3,32 +3,22 @@ using TMPro;
 
 public class ScoreDisplay : MonoBehaviour
 {
-    [SerializeField] private AICardGrid gridRef; // Must implement ICardGrid
+    [SerializeField] private MonoBehaviour gridRef; // must implement ICardGrid
     [SerializeField] private TextMeshProUGUI scoreText;
 
     private ICardGrid grid;
 
     private void Awake()
     {
-        grid = gridRef;
+        grid = gridRef as ICardGrid;
     }
 
-    void Update()
+    private void Update()
     {
-        if (gridRef == null) return;
+        if (grid == null) return;
 
-        var flippedCards = gridRef.GetFlippedCardValues();
-        int totalScore = 0;
-
-        foreach (var value in flippedCards)
-        {
-            if (int.TryParse(value, out int cardValue))
-            {
-                totalScore += cardValue;
-            }
-        }
-
-        scoreText.text = totalScore.ToString();
+        var flippedValues = grid.GetFlippedCardValues();
+        int score = ScoreCalculator.CalculateScore(flippedValues);
+        scoreText.text = score.ToString();
     }
-
 }

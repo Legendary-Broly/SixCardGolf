@@ -1,44 +1,36 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class AICardGrid : MonoBehaviour, ICardGrid
 {
-    [SerializeField] private CardController[] cardControllers;
+    [SerializeField] private List<CardController> cardControllers;
 
     public CardModel[] GetCardModels()
     {
-        var models = new CardModel[cardControllers.Length];
-        for (int i = 0; i < cardControllers.Length; i++)
-        {
-            models[i] = cardControllers[i].Model;
-        }
-        return models;
+        return cardControllers.Select(c => c.Model).ToArray();
     }
 
     public void ReplaceCard(int index, string newValue)
     {
+        if (index < 0 || index >= cardControllers.Count) return;
         cardControllers[index].SetCardValue(newValue);
-        cardControllers[index].FlipCard();
     }
 
     public int FindHighestPointFaceUp()
     {
-        int maxPoints = -1;
-        int index = -1;
+        return cardControllers
+            .Where(c => c.IsFaceUp)
+            .Select(c => ScoreCalculator.GetCardPointValue(c.Model.Value))
+            .DefaultIfEmpty(0)
+            .Max();
+    }
 
-        for (int i = 0; i < cardControllers.Length; i++)
-        {
-            var card = cardControllers[i].Model;
-            if (card.IsFaceUp)
-            {
-                int points = ScoreCalculator.GetCardPoints(card.Value);
-                if (points > maxPoints)
-                {
-                    maxPoints = points;
-                    index = i;
-                }
-            }
-        }
-
-        return index;
+    public List<string> GetFlippedCardValues()
+    {
+        return cardControllers
+            .Where(card => card.IsFaceUp)
+            .Select(card => card.Model.Value)
+            .ToList();
     }
 }

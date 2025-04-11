@@ -38,6 +38,7 @@ public class CardController : MonoBehaviour
 
         view.UpdateVisual(Model);
     }
+    public bool IsFaceUp => Model != null && Model.IsFaceUp;
 
     public void OnCardClicked()
     {
