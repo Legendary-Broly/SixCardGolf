@@ -23,14 +23,15 @@ public class CardController : MonoBehaviour, IPointerClickHandler
 
     public void FlipCard()
     {
-        // Always update visual — used after IsFaceUp is set externally
-        view.UpdateVisual(Model);
-
         if (!Model.IsFaceUp)
         {
             Model.IsFaceUp = true;
-            Debug.Log($"[FlipCard] Flipping card with value: {Model.Value}");
         }
+
+        if (view == null)
+            view = GetComponent<CardView>();
+
+        view.UpdateVisual(Model);
     }
 
     public void SetCardValue(string newValue)

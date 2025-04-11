@@ -69,6 +69,8 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
         if (hasDrawn || turnCoordinator.CurrentPhase != TurnPhase.DrawPhase) return;
 
         var model = grid.GetCardModels()[index];
+        var controller = grid.GetCardControllers()[index];
+
         if (model.IsFaceUp)
         {
             Debug.Log($"[FlipCard] Ignored flip — Card at index {index} is already face-up.");
@@ -76,6 +78,8 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
         }
 
         model.IsFaceUp = true;
+        controller.FlipCard(); // ✅ Ensure visuals update too
+
         Debug.Log($"[FlipCard] Flipped card at index {index} - New Value: {model.Value}");
 
         EndTurn();
