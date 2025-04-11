@@ -29,7 +29,7 @@ public class CardController : MonoBehaviour
     public void SetCardValue(string newValue)
     {
         if (Model == null)
-            Model = new CardModel(newValue, true);
+            Model = new CardModel(newValue, false); //please god be the problem
         else
             Model.Value = newValue;
 
