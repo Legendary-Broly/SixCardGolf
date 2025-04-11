@@ -4,21 +4,21 @@ using TMPro;
 
 public class CardView : MonoBehaviour
 {
-    [SerializeField] private Image cardImage;
+    [SerializeField] private Image cardFaceBackground;
     [SerializeField] private TextMeshProUGUI cardText;
 
     public void UpdateVisual(CardModel model)
     {
+        Debug.Log($"[CardView] UpdateVisual called | IsFaceUp: {model.IsFaceUp} | Value: {model.Value}");
+
         if (model.IsFaceUp)
         {
-            cardImage.enabled = false;
-            cardImage.color = Color.white;
-            cardImage.enabled = true;
+            cardFaceBackground.color = Color.white;
             cardText.text = model.Value;
         }
         else
         {
-            cardImage.color = Color.gray;
+            cardFaceBackground.color = Color.gray;
             cardText.text = "";
         }
     }

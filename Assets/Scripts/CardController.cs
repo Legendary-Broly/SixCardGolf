@@ -36,7 +36,7 @@ public class CardController : MonoBehaviour, IPointerClickHandler
     public void SetCardValue(string newValue)
     {
         if (Model == null)
-            Model = new CardModel(newValue, false);
+            Model = new CardModel(newValue, false); // Don't assume face-up
         else
             Model.Value = newValue;
 
