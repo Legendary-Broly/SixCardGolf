@@ -68,10 +68,12 @@ public class PlayerTurnController : MonoBehaviour
     {
         if (hasDrawn || turnCoordinator.CurrentPhase != TurnPhase.DrawPhase) return;
 
-        var card = grid.GetCardModels()[index];
-        if (card.IsFaceUp) return;
+        var model = grid.GetCardModels()[index];
+        if (model.IsFaceUp) return;
 
-        card.IsFaceUp = true;
+        model.IsFaceUp = true;
+        Debug.Log($"[FlipCard] Flipped card at index {index} - New Value: {model.Value}");
+
         EndTurn();
     }
 
