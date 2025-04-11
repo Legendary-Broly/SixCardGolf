@@ -70,6 +70,11 @@ public class TurnCoordinator : MonoBehaviour
         if (!finalTurnTriggered)
             finalTurnTriggered = true;
     }
+    public void SetPhase(TurnPhase newPhase)
+    {
+        CurrentPhase = newPhase;
+        Debug.Log($"Turn Phase changed to: {CurrentPhase}");
+    }
 
     private void EndRound()
     {
