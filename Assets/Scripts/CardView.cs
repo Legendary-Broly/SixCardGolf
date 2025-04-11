@@ -11,7 +11,9 @@ public class CardView : MonoBehaviour
     {
         if (model.IsFaceUp)
         {
+            cardImage.enabled = false;
             cardImage.color = Color.white;
+            cardImage.enabled = true;
             cardText.text = model.Value;
         }
         else

@@ -373,6 +373,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.9511886
       objectReference: {fileID: 0}
+    - target: {fileID: 5839868783503440501, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7767976726121045568, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0.5
@@ -1098,6 +1102,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.9511886
       objectReference: {fileID: 0}
+    - target: {fileID: 5839868783503440501, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7767976726121045568, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0.5
@@ -1302,6 +1310,10 @@ PrefabInstance:
     - target: {fileID: 5839868783503440501, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_Color.r
       value: 0.9511886
+      objectReference: {fileID: 0}
+    - target: {fileID: 5839868783503440501, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7767976726121045568, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1853,6 +1865,10 @@ PrefabInstance:
     - target: {fileID: 5839868783503440501, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_Color.r
       value: 0.9511886
+      objectReference: {fileID: 0}
+    - target: {fileID: 5839868783503440501, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7767976726121045568, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_AnchorMax.x
@@ -3213,7 +3229,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 961739752}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -4028,6 +4044,10 @@ PrefabInstance:
     - target: {fileID: 5839868783503440501, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_Color.r
       value: 0.9511886
+      objectReference: {fileID: 0}
+    - target: {fileID: 5839868783503440501, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7767976726121045568, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_AnchorMax.x
@@ -5293,6 +5313,10 @@ PrefabInstance:
     - target: {fileID: 5839868783503440501, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_Color.r
       value: 0.9511886
+      objectReference: {fileID: 0}
+    - target: {fileID: 5839868783503440501, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7767976726121045568, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_AnchorMax.x
