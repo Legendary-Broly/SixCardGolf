@@ -2127,6 +2127,7 @@ GameObject:
   - component: {fileID: 807597294}
   - component: {fileID: 807597293}
   - component: {fileID: 807597295}
+  - component: {fileID: 807597296}
   m_Layer: 0
   m_Name: PlayerGrid
   m_TagString: Untagged
@@ -2141,7 +2142,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 807597292}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df320349873d25d499d277ce8a250de5, type: 3}
   m_Name: 
@@ -2202,6 +2203,25 @@ MonoBehaviour:
   m_Spacing: {x: 20, y: 20}
   m_Constraint: 1
   m_ConstraintCount: 3
+--- !u!114 &807597296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 807597292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa9679d0d7470a148a1991512e57d24f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardControllers:
+  - {fileID: 281138213}
+  - {fileID: 944851012}
+  - {fileID: 1082007266}
+  - {fileID: 576829426}
+  - {fileID: 1005981163}
+  - {fileID: 1335376487}
 --- !u!1 &835490060
 GameObject:
   m_ObjectHideFlags: 0
@@ -3276,7 +3296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36f118d3f024f6f438b81f27507fc0b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridRef: {fileID: 2038826571}
+  gridRef: {fileID: 807597293}
   scoreText: {fileID: 1415085205}
 --- !u!114 &1415085205
 MonoBehaviour:
