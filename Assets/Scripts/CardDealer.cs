@@ -6,6 +6,8 @@ public class CardDealer : MonoBehaviour
     [SerializeField] private MonoBehaviour playerGridRef; // Must implement ICardGrid
     [SerializeField] private MonoBehaviour aiGridRef;     // Must implement ICardGrid
     [SerializeField] private DeckManager deck;
+    [SerializeField] private PlayerTurnController playerTurnController;
+    [SerializeField] private AITurnController aiTurnController;
 
     private ICardGrid playerGrid;
     private ICardGrid aiGrid;
@@ -31,9 +33,17 @@ public class CardDealer : MonoBehaviour
 
     private void DealToGrid(ICardGrid grid)
     {
+        var isPlayer = grid == playerGrid;
+
+        var controllers = grid.GetCardControllers();
+
         for (int i = 0; i < 6; i++)
         {
-            grid.ReplaceCard(i, deck.DrawCard());
+            var controller = controllers[i];
+            string value = deck.DrawCard();
+
+            var handler = isPlayer ? playerTurnController : aiTurnController as ICardInteractionHandler;
+            controller.Initialize(value, false, handler);
         }
     }
 

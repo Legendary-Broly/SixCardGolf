@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerTurnController : MonoBehaviour
+public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
 {
     [SerializeField] private MonoBehaviour gridRef; // Must implement ICardGrid
     [SerializeField] private MonoBehaviour deckRef; // Must implement IDeckSystem
@@ -97,4 +97,13 @@ public class PlayerTurnController : MonoBehaviour
     {
         turnCoordinator.EndPlayerTurn();
     }
+
+    public void HandleCardClick(CardController card)
+    {
+        int index = grid.GetCardControllers().IndexOf(card);
+        if (index == -1) return;
+
+        FlipCard(index);
+    }
+
 }
