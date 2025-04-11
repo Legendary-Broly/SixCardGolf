@@ -1,8 +1,7 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(CardView))]
-public class CardController : MonoBehaviour, IPointerClickHandler
+public class CardController : MonoBehaviour
 {
     public CardModel Model { get; private set; }
 
@@ -23,8 +22,12 @@ public class CardController : MonoBehaviour, IPointerClickHandler
 
     public void FlipCard()
     {
-        Debug.Log($"[FlipCard] Called on card with value: {Model?.Value} | IsFaceUp: {Model?.IsFaceUp}");
-        view.UpdateVisual(Model);
+        if (!Model.IsFaceUp)
+        {
+            Model.IsFaceUp = true;
+            Debug.Log($"[FlipCard] Flipping card with value: {Model.Value}");
+            view.UpdateVisual(Model);
+        }
     }
 
     public void SetCardValue(string newValue)
@@ -45,14 +48,5 @@ public class CardController : MonoBehaviour, IPointerClickHandler
     public void OnCardClicked()
     {
         interactionHandler?.HandleCardClick(this);
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (Model == null) return;
-
-        Model.IsFaceUp = !Model.IsFaceUp;
-        view.UpdateVisual(Model);
-        Debug.Log($"[OnPointerClick] Card clicked and flipped. Now face up? {Model.IsFaceUp}");
     }
 }
