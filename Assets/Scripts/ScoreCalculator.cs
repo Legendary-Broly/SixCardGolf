@@ -14,7 +14,7 @@ public static class ScoreCalculator
     {
         if (string.IsNullOrEmpty(value)) return 0;
 
-        if (!pointValues.TryGetValue(value, out int val))
+        if (!CardPoints.TryGetValue(value, out int val))
         {
             Debug.LogWarning($"[ScoreCalculator] Unknown card value: {value}");
             return 0;
