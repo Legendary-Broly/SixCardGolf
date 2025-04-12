@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 public class DeckUIController : MonoBehaviour
 {
@@ -29,14 +28,13 @@ public class DeckUIController : MonoBehaviour
         var discardGO = Instantiate(cardPrefab, discardCardDisplay.transform);
         discardCardController = discardGO.GetComponent<CardController>();
 
-        // 👇 Try pulling current discard directly from the deck
         var deck = FindFirstObjectByType<DeckManager>();
         if (deck != null)
         {
-            string currentTop = deck.PeekTopDiscard();
-            if (!string.IsNullOrEmpty(currentTop))
+            string top = deck.PeekTopDiscard();
+            if (!string.IsNullOrEmpty(top))
             {
-                UpdateDiscardCard(currentTop);
+                UpdateDiscardCard(top);
             }
         }
     }
@@ -53,8 +51,7 @@ public class DeckUIController : MonoBehaviour
     {
         if (discardCardController != null && !string.IsNullOrEmpty(value))
         {
-            discardCardController.Initialize(value, true, null); // Treat it as a new card
+            discardCardController.Initialize(value, true, null);
         }
     }
-
 }

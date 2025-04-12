@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -11,11 +11,22 @@ public class CardView : MonoBehaviour
     {
         Debug.Log($"[CardView] UpdateVisual called | IsFaceUp: {model.IsFaceUp} | Value: {model.Value}");
 
-        // Unconditionally apply values for clarity
-        cardText.text = model.IsFaceUp ? model.Value : "";
-        cardFaceBackground.color = model.IsFaceUp ? Color.white : Color.gray;
+        if (model.IsFaceUp)
+        {
+            cardFaceBackground.color = Color.white;
+            cardText.text = model.Value;
+        }
+        else
+        {
+            cardFaceBackground.color = Color.gray;
+            cardText.text = "";
+        }
 
-        Debug.Log($"[CardView] Color now: {cardFaceBackground.color} | Text now: {cardText.text}");
+        cardText.ForceMeshUpdate();
+
+        // 🔄 Force UI refresh by enabling/disabling the GameObject
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(cardText.rectTransform);
     }
 
 }
