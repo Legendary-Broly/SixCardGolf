@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 public class AIAnalyzer
 {
@@ -57,6 +58,53 @@ public class AIAnalyzer
         }
 
         return matched;
+    }
+    public int FindMatchableColumnIndex(List<CardModel> cards, string incoming)
+    {
+        for (int col = 0; col < 3; col++)
+        {
+            int top = col;
+            int bottom = col + 3;
+
+            CardModel topCard = cards[top];
+            CardModel bottomCard = cards[bottom];
+
+            // Check if either top or bottom is face-up and matches the incoming
+            bool topMatches = topCard.IsFaceUp && (topCard.Value == incoming || topCard.Value == "JOKER" || incoming == "JOKER");
+            bool bottomMatches = bottomCard.IsFaceUp && (bottomCard.Value == incoming || bottomCard.Value == "JOKER" || incoming == "JOKER");
+
+            // If top is face-up and bottom is face-down
+            if (topMatches && !bottomCard.IsFaceUp)
+                return bottom;
+
+            // If bottom is face-up and top is face-down
+            if (bottomMatches && !topCard.IsFaceUp)
+                return top;
+        }
+
+        return -1; // no matchable column
+    }
+
+    public int CountFaceUpCards(List<CardModel> cards)
+    {
+        return cards.Count(card => card.IsFaceUp);
+    }
+
+    public int SelectRandomFaceDownIndex(List<CardModel> cards)
+    {
+        var faceDownIndices = new List<int>();
+        for (int i = 0; i < cards.Count; i++)
+        {
+            if (!cards[i].IsFaceUp)
+            {
+                faceDownIndices.Add(i);
+            }
+        }
+
+        if (faceDownIndices.Count == 0) return -1;
+
+        int randomIndex = UnityEngine.Random.Range(0, faceDownIndices.Count);
+        return faceDownIndices[randomIndex];
     }
 
     public int FindMatchableCard(CardModel[] grid, string value)
