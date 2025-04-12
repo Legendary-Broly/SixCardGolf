@@ -49,6 +49,8 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
         turnCoordinator.SetPhase(TurnPhase.ActionPhase);
 
         deckUI.UpdateDrawnCard(drawnCard);
+        deckUI.ClearDiscardCard(); // <-- This line clears the DiscardCardDisplay
+
         Debug.Log("Player took discard: " + drawnCard);
     }
 

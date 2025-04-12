@@ -33,5 +33,9 @@ public class DeckUIController : MonoBehaviour
     {
         drawnCardController.Initialize("", false, null); // or display a placeholder
     }
+    public void ClearDiscardCard()
+    {
+        discardCardController.Initialize("", false, null); // Show as blank
+    }
 
 }
