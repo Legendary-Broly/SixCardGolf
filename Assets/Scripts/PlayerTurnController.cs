@@ -43,12 +43,13 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
     {
         if (hasDrawn || turnCoordinator.CurrentPhase != TurnPhase.DrawPhase) return;
 
-        drawnCard = deck.TakeDiscardCard();
+        drawnCard = deck.TakeDiscardCard(); // pull from discard pile
         hasDrawn = true;
         turnCoordinator.SetPhase(TurnPhase.ActionPhase);
 
-        GameEvents.CardDrawn(drawnCard);
-        GameEvents.CardDiscarded(""); // Clear discard display
+        GameEvents.CardDrawn(drawnCard);       // update DrawnCardDisplay
+        GameEvents.CardDiscarded("");          // clear discard display (temporarily)
+
         Debug.Log("Player took discard: " + drawnCard);
     }
 
