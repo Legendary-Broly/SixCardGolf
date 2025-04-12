@@ -1812,6 +1812,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1010078853}
     m_Modifications:
+    - target: {fileID: -8247468788731506471, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 119020499654059551, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_Name
       value: CardPrefab
@@ -4002,6 +4006,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1410577014}
     m_Modifications:
+    - target: {fileID: -8247468788731506471, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 119020499654059551, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
       propertyPath: m_Name
       value: CardPrefab

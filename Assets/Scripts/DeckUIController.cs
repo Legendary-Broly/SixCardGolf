@@ -29,4 +29,9 @@ public class DeckUIController : MonoBehaviour
         Debug.Log($"[DeckUI] Updating discard card to: {value}");
         discardCardController.Initialize(value, true, null);
     }
+    public void ClearDrawnCard()
+    {
+        drawnCardController.Initialize("", false, null); // or display a placeholder
+    }
+
 }

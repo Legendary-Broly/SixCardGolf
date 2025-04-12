@@ -30,14 +30,9 @@ public class CardDealer : MonoBehaviour
 
         string firstDiscard = deck.DrawCard();
         deck.PlaceInDiscardPile(firstDiscard);
+        deckUI.UpdateDiscardCard(firstDiscard); // <-- Add this line
 
-        Invoke(nameof(SignalGameStart), 0.2f);
-    }
-
-    private IEnumerator DelayedDiscardUIUpdate(string value)
-    {
-        yield return new WaitForSeconds(0.1f); // Give time for prefab to be instantiated
-        deckUI.UpdateDiscardCard(value);
+        SignalGameStart(); // <-- You can remove Invoke + delay unless necessary
     }
 
     private void DealToGrid(ICardGrid grid)

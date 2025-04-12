@@ -58,6 +58,7 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
 
         deck.PlaceInDiscardPile(drawnCard);
         deckUI.UpdateDiscardCard(drawnCard);
+        deckUI.ClearDrawnCard();
 
         drawnCard = null;
         hasDrawn = false;
@@ -75,8 +76,20 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
             // Swap logic
             var outgoing = grid.GetCardModels()[index].Value;
             grid.ReplaceCard(index, drawnCard);
+
+            // Manually flip the card face-up if it wasn’t already
+            var model = grid.GetCardModels()[index];
+            var controller = grid.GetCardControllers()[index];
+
+            if (!model.IsFaceUp)
+            {
+                model.IsFaceUp = true;
+                controller.FlipCard();
+            }
+
             deck.PlaceInDiscardPile(outgoing);
             deckUI.UpdateDiscardCard(outgoing);
+            deckUI.ClearDrawnCard(); // <-- Clears the drawn card display after swap
 
             drawnCard = null;
             hasDrawn = false;
