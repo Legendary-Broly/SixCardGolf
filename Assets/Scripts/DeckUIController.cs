@@ -2,44 +2,31 @@
 
 public class DeckUIController : MonoBehaviour
 {
-    [SerializeField] private Transform drawnCardDisplay;
-    [SerializeField] private Transform discardCardDisplay;
-    [SerializeField] private GameObject cardPrefab;
-
-    private GameObject currentDrawnCard;
-    private GameObject currentDiscardCard;
+    [Header("Card Display References")]
+    [SerializeField] private CardController drawnCardController;
+    [SerializeField] private CardController discardCardController;
 
     public void UpdateDrawnCard(string value)
     {
-        Debug.Log($"[DeckUI] UpdateDrawnCard called with value: {value}");
-        UpdateCard(ref currentDrawnCard, drawnCardDisplay, value, true);
+        if (drawnCardController == null)
+        {
+            Debug.LogError("[DeckUI] DrawnCardController reference is missing.");
+            return;
+        }
+
+        Debug.Log($"[DeckUI] Updating drawn card to: {value}");
+        drawnCardController.Initialize(value, true, null);
     }
 
     public void UpdateDiscardCard(string value)
     {
-        Debug.Log($"[DeckUI] UpdateDiscardCard called with value: {value}");
-        UpdateCard(ref currentDiscardCard, discardCardDisplay, value, true);
-    }
-
-    private void UpdateCard(ref GameObject cardObject, Transform displayParent, string value, bool isFaceUp)
-    {
-        if (cardObject != null)
+        if (discardCardController == null)
         {
-            Destroy(cardObject);
-        }
-
-        cardObject = Instantiate(cardPrefab, displayParent);
-        cardObject.transform.localPosition = Vector3.zero;
-
-        var controller = cardObject.GetComponent<CardController>();
-        if (controller == null)
-        {
-            Debug.LogError("[DeckUI] Missing CardController on instantiated card.");
+            Debug.LogError("[DeckUI] DiscardCardController reference is missing.");
             return;
         }
 
-        controller.Initialize(value, isFaceUp, null);
-
-        Debug.Log($"[DeckUI] CardController initialized with value: {value} | FaceUp: {isFaceUp}");
+        Debug.Log($"[DeckUI] Updating discard card to: {value}");
+        discardCardController.Initialize(value, true, null);
     }
 }
