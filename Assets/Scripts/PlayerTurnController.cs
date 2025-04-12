@@ -4,6 +4,7 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
 {
     [SerializeField] private MonoBehaviour gridRef; // Must implement ICardGrid
     [SerializeField] private MonoBehaviour deckRef; // Must implement IDeckSystem
+    [SerializeField] private DeckUIController deckUI;
 
     private ICardGrid grid;
     private IDeckSystem deck;
@@ -24,7 +25,6 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
         hasDrawn = false;
         drawnCard = null;
         turnCoordinator.SetPhase(TurnPhase.DrawPhase);
-
         Debug.Log("Player turn started.");
     }
 
@@ -36,6 +36,7 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
         hasDrawn = true;
         turnCoordinator.SetPhase(TurnPhase.ActionPhase);
 
+        deckUI.UpdateDrawnCard(drawnCard);
         Debug.Log("Player drew: " + drawnCard);
     }
 
@@ -47,21 +48,46 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
         hasDrawn = true;
         turnCoordinator.SetPhase(TurnPhase.ActionPhase);
 
+        deckUI.UpdateDrawnCard(drawnCard);
         Debug.Log("Player took discard: " + drawnCard);
     }
 
-    public void ReplaceCard(int index)
+    public void DiscardDrawnCard()
     {
         if (!hasDrawn || string.IsNullOrEmpty(drawnCard) || turnCoordinator.CurrentPhase != TurnPhase.ActionPhase) return;
 
-        var oldCard = grid.GetCardModels()[index].Value;
-        grid.ReplaceCard(index, drawnCard);
-        deck.PlaceInDiscardPile(oldCard);
+        deck.PlaceInDiscardPile(drawnCard);
+        deckUI.UpdateDiscardCard(drawnCard);
 
         drawnCard = null;
         hasDrawn = false;
 
         EndTurn();
+    }
+
+    public void HandleCardClick(CardController card)
+    {
+        int index = grid.GetCardControllers().IndexOf(card);
+        if (index == -1) return;
+
+        if (!string.IsNullOrEmpty(drawnCard))
+        {
+            // Swap logic
+            var outgoing = grid.GetCardModels()[index].Value;
+            grid.ReplaceCard(index, drawnCard);
+            deck.PlaceInDiscardPile(outgoing);
+            deckUI.UpdateDiscardCard(outgoing);
+
+            drawnCard = null;
+            hasDrawn = false;
+
+            EndTurn();
+        }
+        else
+        {
+            // Flip logic
+            FlipCard(index);
+        }
     }
 
     public void FlipCard(int index)
@@ -78,21 +104,9 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
         }
 
         model.IsFaceUp = true;
-        controller.FlipCard(); // ✅ Ensure visuals update too
+        controller.FlipCard();
 
         Debug.Log($"[FlipCard] Flipped card at index {index} - New Value: {model.Value}");
-
-        EndTurn();
-    }
-
-    public void DiscardDrawnCard()
-    {
-        if (!hasDrawn || string.IsNullOrEmpty(drawnCard) || turnCoordinator.CurrentPhase != TurnPhase.ActionPhase) return;
-
-        deck.PlaceInDiscardPile(drawnCard);
-
-        drawnCard = null;
-        hasDrawn = false;
 
         EndTurn();
     }
@@ -101,13 +115,4 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
     {
         turnCoordinator.EndPlayerTurn();
     }
-
-    public void HandleCardClick(CardController card)
-    {
-        int index = grid.GetCardControllers().IndexOf(card);
-        if (index == -1) return;
-
-        FlipCard(index);
-    }
-
 }

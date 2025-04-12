@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class CardDealer : MonoBehaviour
@@ -8,6 +9,7 @@ public class CardDealer : MonoBehaviour
     [SerializeField] private DeckManager deck;
     [SerializeField] private PlayerTurnController playerTurnController;
     [SerializeField] private AITurnController aiTurnController;
+    [SerializeField] private DeckUIController deckUI;
 
     private ICardGrid playerGrid;
     private ICardGrid aiGrid;
@@ -26,9 +28,16 @@ public class CardDealer : MonoBehaviour
         FlipRandomCards(playerGrid, 2);
         FlipRandomCards(aiGrid, 2);
 
-        deck.PlaceInDiscardPile(deck.DrawCard());
+        string firstDiscard = deck.DrawCard();
+        deck.PlaceInDiscardPile(firstDiscard);
 
         Invoke(nameof(SignalGameStart), 0.2f);
+    }
+
+    private IEnumerator DelayedDiscardUIUpdate(string value)
+    {
+        yield return new WaitForSeconds(0.1f); // Give time for prefab to be instantiated
+        deckUI.UpdateDiscardCard(value);
     }
 
     private void DealToGrid(ICardGrid grid)

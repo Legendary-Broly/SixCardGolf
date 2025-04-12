@@ -1,51 +1,60 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class DeckUIController : MonoBehaviour
 {
-    [SerializeField] private Button drawPileButton;
-    [SerializeField] private Button discardPileButton;
-    [SerializeField] private TextMeshProUGUI discardText;
-    [SerializeField] private TextMeshProUGUI drawnCardText;
-    [SerializeField] private MonoBehaviour deckRef; // Must implement IDeckSystem
+    [SerializeField] private GameObject drawnCardDisplay;
+    [SerializeField] private GameObject discardCardDisplay;
+    [SerializeField] private GameObject cardPrefab;
 
-    private IDeckSystem deck;
+    private CardController drawnCardController;
+    private CardController discardCardController;
 
     private void Awake()
     {
-        deck = deckRef as IDeckSystem;
-        drawPileButton.onClick.AddListener(OnDrawClicked);
-        discardPileButton.onClick.AddListener(OnDiscardClicked);
+        InitializeCardDisplays();
     }
 
-    private void Update()
+    private void InitializeCardDisplays()
     {
-        if (deck == null) return;
+        if (drawnCardDisplay.transform.childCount > 0)
+            Destroy(drawnCardDisplay.transform.GetChild(0).gameObject);
 
-        // Only update the discard pile text in real-time
-        discardText.text = $"Discard: {deck.PeekTopDiscard() ?? "Empty"}";
+        if (discardCardDisplay.transform.childCount > 0)
+            Destroy(discardCardDisplay.transform.GetChild(0).gameObject);
+
+        var drawnGO = Instantiate(cardPrefab, drawnCardDisplay.transform);
+        drawnCardController = drawnGO.GetComponent<CardController>();
+
+        var discardGO = Instantiate(cardPrefab, discardCardDisplay.transform);
+        discardCardController = discardGO.GetComponent<CardController>();
+
+        // 👇 Try pulling current discard directly from the deck
+        var deck = FindFirstObjectByType<DeckManager>();
+        if (deck != null)
+        {
+            string currentTop = deck.PeekTopDiscard();
+            if (!string.IsNullOrEmpty(currentTop))
+            {
+                UpdateDiscardCard(currentTop);
+            }
+        }
     }
 
-    private void OnDrawClicked()
+    public void UpdateDrawnCard(string value)
     {
-        string drawn = deck.DrawCard();
-        UpdateDrawnCardText(drawn);
+        if (drawnCardController != null && !string.IsNullOrEmpty(value))
+        {
+            drawnCardController.Initialize(value, true, null);
+        }
     }
 
-    private void OnDiscardClicked()
+    public void UpdateDiscardCard(string value)
     {
-        string top = deck.PeekTopDiscard();
-        UpdateDrawnCardText(top);
+        if (discardCardController != null && !string.IsNullOrEmpty(value))
+        {
+            discardCardController.Initialize(value, true, null); // Treat it as a new card
+        }
     }
 
-    public void UpdateDrawnCardText(string cardValue)
-    {
-        drawnCardText.text = $"Drawn: {cardValue}";
-    }
-
-    public void UpdateDiscardText(string cardValue)
-    {
-        discardText.text = $"Discard: {cardValue}";
-    }
 }
