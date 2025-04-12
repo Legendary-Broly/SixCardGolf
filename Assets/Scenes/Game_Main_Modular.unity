@@ -2557,7 +2557,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridRef: {fileID: 807597296}
   deckRef: {fileID: 213915159}
-  deckUI: {fileID: 16512168}
 --- !u!4 &1300093533
 Transform:
   m_ObjectHideFlags: 0

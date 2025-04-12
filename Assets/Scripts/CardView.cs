@@ -19,7 +19,7 @@ public class CardView : MonoBehaviour
 
     public void UpdateVisual(CardModel model)
     {
-        Debug.Log($"[CardView] UpdateVisual called | IsFaceUp: {model.IsFaceUp} | Value: {model.Value}");
+        //Debug.Log($"[CardView] UpdateVisual called | IsFaceUp: {model.IsFaceUp} | Value: {model.Value}");
 
         if (model.IsFaceUp)
         {
@@ -32,6 +32,6 @@ public class CardView : MonoBehaviour
             cardText.text = "";
         }
 
-        Debug.Log($"[CardView] Color now: {cardFaceBackground.color} | Text now: {cardText.text}");
+        //Debug.Log($"[CardView] Color now: {cardFaceBackground.color} | Text now: {cardText.text}");
     }
 }

@@ -60,13 +60,13 @@ public class DeckManager : MonoBehaviour, IDeckSystem
     public string TakeDiscardCard()
     {
         if (discardPile.Count == 0) return null;
-        var card = discardPile.Pop();
-        return card;
+        return discardPile.Pop();
     }
 
-    public void PlaceInDiscardPile(string cardValue)
+    public void PlaceInDiscardPile(string value)
     {
-        discardPile.Push(cardValue);
+        discardPile.Push(value);
+        GameEvents.CardDiscarded(value);
     }
 
     private void ShuffleDiscardIntoDraw()

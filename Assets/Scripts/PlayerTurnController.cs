@@ -32,6 +32,8 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
         if (hasDrawn || turnCoordinator.CurrentPhase != TurnPhase.DrawPhase) return;
 
         drawnCard = deck.DrawCard();
+        if (string.IsNullOrEmpty(drawnCard)) return;
+
         hasDrawn = true;
         turnCoordinator.SetPhase(TurnPhase.ActionPhase);
 
@@ -43,20 +45,19 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
     {
         if (hasDrawn || turnCoordinator.CurrentPhase != TurnPhase.DrawPhase) return;
 
-        // Clear previous drawn card
-        drawnCard = null;
-        GameEvents.CardDrawn(""); // Clear the DrawnCardDisplay
-
-        // Draw new card from discard pile
         drawnCard = deck.TakeDiscardCard();
+        Debug.Log($"[Player] TakeDiscardCard() returned: {drawnCard}");
+
+        if (string.IsNullOrEmpty(drawnCard))
+        {
+            Debug.LogWarning("[Player] TakeDiscardCard() failed — discard pile likely empty.");
+            return;
+        }
+
         hasDrawn = true;
         turnCoordinator.SetPhase(TurnPhase.ActionPhase);
 
-        // Update displays
         GameEvents.CardDrawn(drawnCard);
-        GameEvents.CardDiscarded(""); // Clear discard display temporarily
-
-        Debug.Log("Player took discard: " + drawnCard);
     }
 
     public void DiscardDrawnCard()
@@ -95,8 +96,8 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
             }
 
             deck.PlaceInDiscardPile(outgoing);
-            GameEvents.CardDiscarded(outgoing);
-            GameEvents.CardDrawn("");
+            GameEvents.CardDiscarded(outgoing); // update DiscardCardDisplay
+            GameEvents.CardDrawn("");           // clear DrawnCardDisplay
 
             drawnCard = null;
             hasDrawn = false;
