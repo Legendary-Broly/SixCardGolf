@@ -37,6 +37,27 @@ public class AIAnalyzer
 
         return matches;
     }
+    public List<int> GetMatchedColumnIndices(List<CardModel> cards)
+    {
+        var matched = new List<int>();
+
+        for (int i = 0; i < 3; i++)
+        {
+            var top = cards[i];
+            var bottom = cards[i + 3];
+
+            bool bothFaceUp = top.IsFaceUp && bottom.IsFaceUp;
+            bool isMatch = top.Value == bottom.Value || top.Value == "JOKER" || bottom.Value == "JOKER";
+
+            if (bothFaceUp && isMatch)
+            {
+                matched.Add(i);
+                matched.Add(i + 3);
+            }
+        }
+
+        return matched;
+    }
 
     public int FindMatchableCard(CardModel[] grid, string value)
     {
@@ -83,6 +104,34 @@ public class AIAnalyzer
         }
 
         return -1;
+    }
+    public int FindWorstReplaceableCard(List<CardModel> cards, List<int> matchedIndices)
+    {
+        int worstIndex = -1;
+        int worstValue = -1;
+
+        for (int i = 0; i < cards.Count; i++)
+        {
+            var card = cards[i];
+
+            if (!card.IsFaceUp || matchedIndices.Contains(i))
+                continue;
+
+            int val = ScoreCalculator.GetCardPointValue(card.Value);
+            if (val > worstValue)
+            {
+                worstValue = val;
+                worstIndex = i;
+            }
+        }
+
+        return worstIndex;
+    }
+    public bool IsBetterByThreshold(string incoming, string existing, int threshold = 2)
+    {
+        int incomingVal = ScoreCalculator.GetCardPointValue(incoming);
+        int existingVal = ScoreCalculator.GetCardPointValue(existing);
+        return (existingVal - incomingVal) >= threshold;
     }
 
 }

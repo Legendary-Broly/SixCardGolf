@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
 
-public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
+public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractionHandler
 {
     [SerializeField] private MonoBehaviour gridRef; // Must implement ICardGrid
     [SerializeField] private MonoBehaviour deckRef; // Must implement IDeckSystem
-    [SerializeField] private DeckUIController deckUI;
 
     private ICardGrid grid;
     private IDeckSystem deck;
@@ -36,7 +35,7 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
         hasDrawn = true;
         turnCoordinator.SetPhase(TurnPhase.ActionPhase);
 
-        deckUI.UpdateDrawnCard(drawnCard);
+        GameEvents.CardDrawn(drawnCard);
         Debug.Log("Player drew: " + drawnCard);
     }
 
@@ -48,9 +47,8 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
         hasDrawn = true;
         turnCoordinator.SetPhase(TurnPhase.ActionPhase);
 
-        deckUI.UpdateDrawnCard(drawnCard);
-        deckUI.ClearDiscardCard(); // <-- This line clears the DiscardCardDisplay
-
+        GameEvents.CardDrawn(drawnCard);
+        GameEvents.CardDiscarded(""); // Clear discard display
         Debug.Log("Player took discard: " + drawnCard);
     }
 
@@ -59,8 +57,8 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
         if (!hasDrawn || string.IsNullOrEmpty(drawnCard) || turnCoordinator.CurrentPhase != TurnPhase.ActionPhase) return;
 
         deck.PlaceInDiscardPile(drawnCard);
-        deckUI.UpdateDiscardCard(drawnCard);
-        deckUI.ClearDrawnCard();
+        GameEvents.CardDiscarded(drawnCard);
+        GameEvents.CardDrawn("");
 
         drawnCard = null;
         hasDrawn = false;
@@ -90,8 +88,8 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
             }
 
             deck.PlaceInDiscardPile(outgoing);
-            deckUI.UpdateDiscardCard(outgoing);
-            deckUI.ClearDrawnCard(); // <-- Clears the drawn card display after swap
+            GameEvents.CardDiscarded(outgoing);
+            GameEvents.CardDrawn("");
 
             drawnCard = null;
             hasDrawn = false;
@@ -124,6 +122,12 @@ public class PlayerTurnController : MonoBehaviour, ICardInteractionHandler
         Debug.Log($"[FlipCard] Flipped card at index {index} - New Value: {model.Value}");
 
         EndTurn();
+    }
+
+    public void ReplaceCardAt(int index, string value)
+    {
+        grid.ReplaceCard(index, value);
+        GameEvents.CardDrawn("");
     }
 
     private void EndTurn()
