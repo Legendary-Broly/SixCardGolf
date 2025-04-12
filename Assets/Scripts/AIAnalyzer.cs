@@ -177,8 +177,12 @@ public class AIAnalyzer
     }
     public bool IsBetterByThreshold(string incoming, string existing, int threshold = 2)
     {
+        if (string.IsNullOrEmpty(incoming) || string.IsNullOrEmpty(existing))
+            return false;
+
         int incomingVal = ScoreCalculator.GetCardPointValue(incoming);
         int existingVal = ScoreCalculator.GetCardPointValue(existing);
+
         return (existingVal - incomingVal) >= threshold;
     }
 

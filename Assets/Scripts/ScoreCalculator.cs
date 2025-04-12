@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public static class ScoreCalculator
 {
@@ -11,7 +12,15 @@ public static class ScoreCalculator
 
     public static int GetCardPointValue(string value)
     {
-        return CardPoints.TryGetValue(value, out var score) ? score : 99;
+        if (string.IsNullOrEmpty(value)) return 0;
+
+        if (!pointValues.TryGetValue(value, out int val))
+        {
+            Debug.LogWarning($"[ScoreCalculator] Unknown card value: {value}");
+            return 0;
+        }
+
+        return val;
     }
 
     public static int CalculateScore(List<string> values)
