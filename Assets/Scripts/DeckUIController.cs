@@ -2,56 +2,44 @@
 
 public class DeckUIController : MonoBehaviour
 {
-    [SerializeField] private GameObject drawnCardDisplay;
-    [SerializeField] private GameObject discardCardDisplay;
+    [SerializeField] private Transform drawnCardDisplay;
+    [SerializeField] private Transform discardCardDisplay;
     [SerializeField] private GameObject cardPrefab;
 
-    private CardController drawnCardController;
-    private CardController discardCardController;
-
-    private void Awake()
-    {
-        InitializeCardDisplays();
-    }
-
-    private void InitializeCardDisplays()
-    {
-        if (drawnCardDisplay.transform.childCount > 0)
-            Destroy(drawnCardDisplay.transform.GetChild(0).gameObject);
-
-        if (discardCardDisplay.transform.childCount > 0)
-            Destroy(discardCardDisplay.transform.GetChild(0).gameObject);
-
-        var drawnGO = Instantiate(cardPrefab, drawnCardDisplay.transform);
-        drawnCardController = drawnGO.GetComponent<CardController>();
-
-        var discardGO = Instantiate(cardPrefab, discardCardDisplay.transform);
-        discardCardController = discardGO.GetComponent<CardController>();
-
-        var deck = FindFirstObjectByType<DeckManager>();
-        if (deck != null)
-        {
-            string top = deck.PeekTopDiscard();
-            if (!string.IsNullOrEmpty(top))
-            {
-                UpdateDiscardCard(top);
-            }
-        }
-    }
+    private GameObject currentDrawnCard;
+    private GameObject currentDiscardCard;
 
     public void UpdateDrawnCard(string value)
     {
-        if (drawnCardController != null && !string.IsNullOrEmpty(value))
-        {
-            drawnCardController.Initialize(value, true, null);
-        }
+        Debug.Log($"[DeckUI] UpdateDrawnCard called with value: {value}");
+        UpdateCard(ref currentDrawnCard, drawnCardDisplay, value, true);
     }
 
     public void UpdateDiscardCard(string value)
     {
-        if (discardCardController != null && !string.IsNullOrEmpty(value))
+        Debug.Log($"[DeckUI] UpdateDiscardCard called with value: {value}");
+        UpdateCard(ref currentDiscardCard, discardCardDisplay, value, true);
+    }
+
+    private void UpdateCard(ref GameObject cardObject, Transform displayParent, string value, bool isFaceUp)
+    {
+        if (cardObject != null)
         {
-            discardCardController.Initialize(value, true, null);
+            Destroy(cardObject);
         }
+
+        cardObject = Instantiate(cardPrefab, displayParent);
+        cardObject.transform.localPosition = Vector3.zero;
+
+        var controller = cardObject.GetComponent<CardController>();
+        if (controller == null)
+        {
+            Debug.LogError("[DeckUI] Missing CardController on instantiated card.");
+            return;
+        }
+
+        controller.Initialize(value, isFaceUp, null);
+
+        Debug.Log($"[DeckUI] CardController initialized with value: {value} | FaceUp: {isFaceUp}");
     }
 }
