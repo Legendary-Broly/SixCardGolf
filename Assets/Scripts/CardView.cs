@@ -4,8 +4,18 @@ using TMPro;
 
 public class CardView : MonoBehaviour
 {
-    [SerializeField] private Image cardFaceBackground; // this should be CardFace's Image component
+    [SerializeField] private Image cardFaceBackground;
     [SerializeField] private TextMeshProUGUI cardText;
+
+    private void Awake()
+    {
+        // Ensure both fields are hooked up even in runtime-spawned prefabs
+        if (cardFaceBackground == null)
+            cardFaceBackground = GetComponentInChildren<Image>();
+
+        if (cardText == null)
+            cardText = GetComponentInChildren<TextMeshProUGUI>();
+    }
 
     public void UpdateVisual(CardModel model)
     {
@@ -22,12 +32,6 @@ public class CardView : MonoBehaviour
             cardText.text = "";
         }
 
-        cardText.ForceMeshUpdate();
-
-        // 🔄 Force UI refresh by enabling/disabling the GameObject
-        Canvas.ForceUpdateCanvases();
-        LayoutRebuilder.ForceRebuildLayoutImmediate(cardText.rectTransform);
+        Debug.Log($"[CardView] Color now: {cardFaceBackground.color} | Text now: {cardText.text}");
     }
-
 }
-
