@@ -28,11 +28,12 @@ public class CardDealer : MonoBehaviour
         FlipRandomCards(playerGrid, 2);
         FlipRandomCards(aiGrid, 2);
 
+        // ✅ Initialize discard pile with top draw card
         string firstDiscard = deck.DrawCard();
         deck.PlaceInDiscardPile(firstDiscard);
-        deckUI.UpdateDiscardCard(firstDiscard); // <-- Add this line
+        deckUI.UpdateDiscardCard(firstDiscard);
 
-        SignalGameStart(); // <-- You can remove Invoke + delay unless necessary
+        SignalGameStart();
     }
 
     private void DealToGrid(ICardGrid grid)
@@ -46,7 +47,10 @@ public class CardDealer : MonoBehaviour
             var controller = controllers[i];
             string value = deck.DrawCard();
 
-            var handler = isPlayer ? playerTurnController : aiTurnController as ICardInteractionHandler;
+            var handler = isPlayer
+                ? playerTurnController
+                : aiTurnController as ICardInteractionHandler;
+
             controller.Initialize(value, false, handler);
         }
     }

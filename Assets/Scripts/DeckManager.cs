@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class DeckManager : MonoBehaviour, IDeckSystem
@@ -59,8 +59,15 @@ public class DeckManager : MonoBehaviour, IDeckSystem
 
     public string TakeDiscardCard()
     {
-        if (discardPile.Count == 0) return null;
-        return discardPile.Pop();
+        if (discardPile.Count == 0)
+        {
+            Debug.LogWarning("[DeckManager] TakeDiscardCard() failed — discard pile is empty.");
+            return null;
+        }
+
+        string card = discardPile.Pop();
+        Debug.Log($"[DeckManager] TakeDiscardCard() returned: {card}");
+        return card;
     }
 
     public void PlaceInDiscardPile(string value)
