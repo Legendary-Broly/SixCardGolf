@@ -7,10 +7,11 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
 
     private ICardGrid grid;
     private IDeckSystem deck;
+    private TurnCoordinator turnCoordinator;
 
     private string drawnCard = null;
     private bool hasDrawn = false;
-    private TurnCoordinator turnCoordinator;
+    private bool usingDiscard = false;
 
     private void Awake()
     {
@@ -23,6 +24,7 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
     {
         hasDrawn = false;
         drawnCard = null;
+        usingDiscard = false;
         turnCoordinator.SetPhase(TurnPhase.DrawPhase);
         Debug.Log("Player turn started.");
     }
@@ -35,6 +37,7 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
         if (string.IsNullOrEmpty(drawnCard)) return;
 
         hasDrawn = true;
+        usingDiscard = false;
         turnCoordinator.SetPhase(TurnPhase.ActionPhase);
 
         GameEvents.CardDrawn(drawnCard);
@@ -45,19 +48,19 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
     {
         if (hasDrawn || turnCoordinator.CurrentPhase != TurnPhase.DrawPhase) return;
 
-        drawnCard = deck.TakeDiscardCard();
-        Debug.Log($"[Player] TakeDiscardCard() returned: {drawnCard}");
-
+        drawnCard = deck.PeekTopDiscard(); // Only peek — don't pop yet
         if (string.IsNullOrEmpty(drawnCard))
         {
-            Debug.LogWarning("[Player] TakeDiscardCard() failed — discard pile likely empty.");
+            Debug.LogWarning("[Player] Tried to take discard, but pile was empty.");
             return;
         }
 
         hasDrawn = true;
+        usingDiscard = true;
         turnCoordinator.SetPhase(TurnPhase.ActionPhase);
 
         GameEvents.CardDrawn(drawnCard);
+        Debug.Log("Player peeked discard: " + drawnCard);
     }
 
     public void DiscardDrawnCard()
@@ -70,6 +73,7 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
 
         drawnCard = null;
         hasDrawn = false;
+        usingDiscard = false;
 
         EndTurn();
     }
@@ -79,13 +83,15 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
         int index = grid.GetCardControllers().IndexOf(card);
         if (index == -1) return;
 
-        if (!string.IsNullOrEmpty(drawnCard))
+        if (hasDrawn && !string.IsNullOrEmpty(drawnCard))
         {
             // Swap logic
             var outgoing = grid.GetCardModels()[index].Value;
+
+            // Replace the grid card with the drawn card
             grid.ReplaceCard(index, drawnCard);
 
-            // Manually flip the card face-up if it wasn’t already
+            // Force face-up if it was face-down
             var model = grid.GetCardModels()[index];
             var controller = grid.GetCardControllers()[index];
 
@@ -95,9 +101,17 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
                 controller.FlipCard();
             }
 
+            // Place outgoing card into discard
             deck.PlaceInDiscardPile(outgoing);
-            GameEvents.CardDiscarded(outgoing); // update DiscardCardDisplay
-            GameEvents.CardDrawn("");           // clear DrawnCardDisplay
+            GameEvents.CardDiscarded(outgoing);
+            GameEvents.CardDrawn(""); // Clear drawn card display
+
+            // Finalize state
+            if (usingDiscard)
+            {
+                deck.TakeDiscardCard(); // Now remove from discard pile
+                usingDiscard = false;
+            }
 
             drawnCard = null;
             hasDrawn = false;
@@ -106,14 +120,20 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
         }
         else
         {
-            // Flip logic
+            // Prevent flip if a drawn card is held
+            if (hasDrawn)
+            {
+                Debug.Log("[Player] Cannot flip — must place drawn card first.");
+                return;
+            }
+
             FlipCard(index);
         }
     }
 
     public void FlipCard(int index)
     {
-        if (hasDrawn || turnCoordinator.CurrentPhase != TurnPhase.DrawPhase) return;
+        if (turnCoordinator.CurrentPhase != TurnPhase.DrawPhase) return;
 
         var model = grid.GetCardModels()[index];
         var controller = grid.GetCardControllers()[index];
@@ -140,6 +160,10 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
 
     private void EndTurn()
     {
+        drawnCard = null;
+        hasDrawn = false;
+        usingDiscard = false;
+
         turnCoordinator.EndPlayerTurn();
     }
 }

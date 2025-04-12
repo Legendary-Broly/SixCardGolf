@@ -6,18 +6,14 @@ using UnityEngine;
 public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHandler
 {
     [Header("Injected Interface References")]
-    [SerializeField] private MonoBehaviour gridRef; // Must implement ICardGrid
-    [SerializeField] private MonoBehaviour deckRef; // Must implement IDeckSystem
+    [SerializeField] private MonoBehaviour gridRef;
+    [SerializeField] private MonoBehaviour deckRef;
 
     private ICardGrid grid;
     private IDeckSystem deck;
     private AIAnalyzer analyzer = new();
-
     private string drawnCard;
-    public void HandleCardClick(CardController card)
-    {
-        // AI never handles manual clicks, leave empty
-    }
+
     private void Awake()
     {
         grid = gridRef as ICardGrid;
@@ -39,46 +35,51 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
 
         Debug.Log($"[AI] Grid has {gridCards.Count} cards. Top of discard: {discardValue}");
 
-        // Step 1: Complete a Third Vertical Match Column
+        List<int> matchedIndices = analyzer.GetMatchedColumnIndices(gridCards);
+
+        // Step 1: Complete third match column using discard
         int thirdMatchIndex = analyzer.FindThirdMatchColumn(gridCards, discardValue);
         if (thirdMatchIndex != -1)
         {
             string outgoing = gridCards[thirdMatchIndex].Value;
             Debug.Log("[AI] Completing third match column using discard.");
-            ReplaceCardAt(thirdMatchIndex, deck.TakeDiscardCard());
+            string taken = deck.TakeDiscardCard();
+            ReplaceCardAt(thirdMatchIndex, taken);
             GameEvents.CardDiscarded(outgoing);
             EndAITurn();
             yield break;
         }
 
-        // Step 2: Match a column with a face-up card
+        // Step 2: Match a column with discard
         int matchIndex = analyzer.FindMatchableColumnIndex(gridCards, discardValue);
         if (matchIndex != -1)
         {
             string outgoing = gridCards[matchIndex].Value;
             Debug.Log("[AI] Matching column using discard card.");
-            ReplaceCardAt(matchIndex, deck.TakeDiscardCard());
+            string taken = deck.TakeDiscardCard();
+            ReplaceCardAt(matchIndex, taken);
             GameEvents.CardDiscarded(outgoing);
             EndAITurn();
             yield break;
         }
 
-        // Step 5: Replace Worst Card If Incoming Card Is 2+ Points Better
-        List<int> matchedIndices = analyzer.GetMatchedColumnIndices(gridCards);
+        // Step 5: Replace worst card if discard is 2+ pts better
         int worstIndex = analyzer.FindWorstReplaceableCard(gridCards, matchedIndices);
         if (worstIndex != -1 && analyzer.IsBetterByThreshold(discardValue, gridCards[worstIndex].Value))
         {
             string outgoing = gridCards[worstIndex].Value;
             Debug.Log("[AI] Replacing worst face-up card with discard (2+ pts better).");
-            ReplaceCardAt(worstIndex, deck.TakeDiscardCard());
+            string taken = deck.TakeDiscardCard();
+            ReplaceCardAt(worstIndex, taken);
             GameEvents.CardDiscarded(outgoing);
             EndAITurn();
             yield break;
         }
 
-        // Step 4: Take a JOKER (Always)
+        // Step 4: Draw and handle JOKER
         string drawn = deck.DrawCard();
         Debug.Log($"[AI] Drew card: {drawn}");
+
         if (drawn == "JOKER")
         {
             int replaceIndex = analyzer.FindWorstReplaceableCard(gridCards, matchedIndices);
@@ -96,7 +97,7 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
             }
         }
 
-        // Step 1 (continued): Try to complete third match with drawn card
+        // Step 1 (continued): Complete third match with drawn card
         int drawnMatchIndex = analyzer.FindThirdMatchColumn(gridCards, drawn);
         if (drawnMatchIndex != -1)
         {
@@ -108,7 +109,7 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
             yield break;
         }
 
-        // Step 2 (continued): Try matching drawn card to a column
+        // Step 2 (continued): Match drawn card
         matchIndex = analyzer.FindMatchableColumnIndex(gridCards, drawn);
         if (matchIndex != -1)
         {
@@ -120,7 +121,7 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
             yield break;
         }
 
-        // Step 5 (continued): Check drawn card vs worst face-up card
+        // Step 5 (continued): Replace worst if drawn card is better
         worstIndex = analyzer.FindWorstReplaceableCard(gridCards, matchedIndices);
         if (worstIndex != -1 && analyzer.IsBetterByThreshold(drawn, gridCards[worstIndex].Value))
         {
@@ -132,7 +133,7 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
             yield break;
         }
 
-        // Step 6: Flip a Card If No Better Move
+        // Step 6: Flip a card if no valid play
         int faceUpCount = analyzer.CountFaceUpCards(gridCards);
         if (faceUpCount < 5)
         {
@@ -146,7 +147,7 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
             }
         }
 
-        // Fallback: discard drawn card
+        // Step 7: Fallback — discard drawn card
         Debug.Log("[AI] No suitable move. Discarding drawn card.");
         deck.PlaceInDiscardPile(drawn);
         GameEvents.CardDiscarded(drawn);
@@ -197,11 +198,6 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
         }
     }
 
-    private void EndAITurn()
-    {
-        Debug.Log("[AI] Ending AI turn.");
-        FindFirstObjectByType<TurnCoordinator>()?.EndAITurn();
-    }
     private void FlipCard(int index)
     {
         var model = grid.GetCardModels()[index];
@@ -214,4 +210,11 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
         }
     }
 
+    private void EndAITurn()
+    {
+        Debug.Log("[AI] Ending AI turn.");
+        FindFirstObjectByType<TurnCoordinator>()?.EndAITurn();
+    }
+
+    public void HandleCardClick(CardController card) { /* unused for AI */ }
 }
