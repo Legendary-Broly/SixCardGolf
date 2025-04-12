@@ -20,6 +20,16 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
         deck = deckRef as IDeckSystem;
     }
 
+    private void OnEnable()
+    {
+        GameEvents.OnDiscardPileUpdated += StartAITurn;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.OnDiscardPileUpdated -= StartAITurn;
+    }
+
     public void StartAITurn()
     {
         Debug.Log("[AI] Starting AI turn...");

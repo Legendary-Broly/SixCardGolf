@@ -12,6 +12,7 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
     private string drawnCard = null;
     private bool hasDrawn = false;
     private bool usingDiscard = false;
+    private bool isFirstTurn = true;
 
     private void Awake()
     {
@@ -27,6 +28,12 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
         usingDiscard = false;
         turnCoordinator.SetPhase(TurnPhase.DrawPhase);
         Debug.Log("Player turn started.");
+        Debug.Log("[PlayerTurnController] BeginTurn called. hasDrawn: " + hasDrawn + ", drawnCard: " + drawnCard + ", usingDiscard: " + usingDiscard);
+
+        if (isFirstTurn)
+        {
+            isFirstTurn = false;
+        }
     }
 
     public void DrawCardFromDeck()
@@ -160,6 +167,14 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
 
     private void EndTurn()
     {
+        Debug.Log("[PlayerTurnController] EndTurn called. isFirstTurn: " + isFirstTurn);
+
+        if (isFirstTurn)
+        {
+            Debug.Log("[Player] First turn cannot end prematurely.");
+            return;
+        }
+
         drawnCard = null;
         hasDrawn = false;
         usingDiscard = false;

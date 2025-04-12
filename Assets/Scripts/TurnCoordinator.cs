@@ -9,6 +9,7 @@ public class TurnCoordinator : MonoBehaviour
     private bool gameStarted = false;
     private bool finalTurnTriggered = false;
     private bool finalTurnInProgress = false;
+    private bool isFirstTurn = true;
 
     public TurnPhase CurrentPhase { get; private set; } = TurnPhase.Waiting;
 
@@ -31,6 +32,16 @@ public class TurnCoordinator : MonoBehaviour
 
     public void EndPlayerTurn()
     {
+        Debug.Log("[TurnCoordinator] EndPlayerTurn called. isFirstTurn: " + isFirstTurn + ", finalTurnTriggered: " + finalTurnTriggered + ", finalTurnInProgress: " + finalTurnInProgress);
+
+        if (isFirstTurn)
+        {
+            isFirstTurn = false;
+            CurrentPhase = TurnPhase.Waiting;
+            aiTurnController.StartAITurn();
+            return;
+        }
+
         if (finalTurnTriggered && finalTurnInProgress)
         {
             EndRound();

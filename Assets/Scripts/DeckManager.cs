@@ -74,6 +74,7 @@ public class DeckManager : MonoBehaviour, IDeckSystem
     {
         discardPile.Push(value);
         GameEvents.CardDiscarded(value);
+        GameEvents.DiscardPileUpdated();
     }
 
     private void ShuffleDiscardIntoDraw()
