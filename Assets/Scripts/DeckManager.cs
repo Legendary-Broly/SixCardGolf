@@ -59,7 +59,9 @@ public class DeckManager : MonoBehaviour, IDeckSystem
 
     public string TakeDiscardCard()
     {
-        return discardPile.Count > 0 ? discardPile.Pop() : null;
+        if (discardPile.Count == 0) return null;
+        var card = discardPile.Pop();
+        return card;
     }
 
     public void PlaceInDiscardPile(string cardValue)
