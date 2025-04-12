@@ -19,6 +19,24 @@ public class AIAnalyzer
         }
         return score;
     }
+    public int CountMatchedColumns(List<CardModel> cards)
+    {
+        int matches = 0;
+
+        for (int i = 0; i < 3; i++)
+        {
+            var top = cards[i];
+            var bottom = cards[i + 3];
+
+            bool bothFaceUp = top.IsFaceUp && bottom.IsFaceUp;
+            bool isMatch = (top.Value == bottom.Value || top.Value == "JOKER" || bottom.Value == "JOKER");
+
+            if (bothFaceUp && isMatch)
+                matches++;
+        }
+
+        return matches;
+    }
 
     public int FindMatchableCard(CardModel[] grid, string value)
     {
@@ -41,4 +59,30 @@ public class AIAnalyzer
         int mate = (index < 3) ? index + 3 : index - 3;
         return !grid[mate].IsFaceUp ? mate : -1;
     }
+    public int FindThirdMatchColumn(List<CardModel> cards, string incomingValue)
+    {
+        int matchedCount = CountMatchedColumns(cards);
+        if (matchedCount < 2) return -1;
+
+        for (int col = 0; col < 3; col++)
+        {
+            var top = cards[col];
+            var bottom = cards[col + 3];
+
+            bool isMatched = (top.Value == bottom.Value || top.Value == "JOKER" || bottom.Value == "JOKER");
+            bool isFullyFaceUp = top.IsFaceUp && bottom.IsFaceUp;
+
+            if (isMatched && isFullyFaceUp) continue;
+
+            // Find the missing piece of this column
+            if (top.IsFaceUp && !bottom.IsFaceUp && (top.Value == incomingValue || top.Value == "JOKER" || incomingValue == "JOKER"))
+                return col + 3;
+
+            if (!top.IsFaceUp && bottom.IsFaceUp && (bottom.Value == incomingValue || bottom.Value == "JOKER" || incomingValue == "JOKER"))
+                return col;
+        }
+
+        return -1;
+    }
+
 }

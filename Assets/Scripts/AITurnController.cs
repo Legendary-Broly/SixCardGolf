@@ -26,54 +26,42 @@ public class AITurnController : MonoBehaviour
 
     private IEnumerator ExecuteTurn()
     {
-        yield return new WaitForSeconds(1f); // Optional pacing delay
+        yield return new WaitForSeconds(1f);
 
-        var gridCards = grid.GetCardModels(); // ✅ Correct method call
+        var gridCards = grid.GetCardModels().ToList(); // Convert array to List<CardModel>
         var discardValue = deck.PeekTopDiscard();
-
         Debug.Log($"[AI] Grid has {gridCards.Count()} cards. Top of discard: {discardValue}");
 
-        int matchIndex = analyzer.FindMatchableCard(gridCards, discardValue);
-
-        // ✅ FIXED: Use gridCards.Count instead of grid.GetCardModels.Count
-        if (matchIndex >= 0 && matchIndex < gridCards.Count())
+        // 🧠 Step 1: Complete a third vertical match column using DISCARD
+        int thirdMatchIndex = analyzer.FindThirdMatchColumn(gridCards, discardValue);
+        if (thirdMatchIndex != -1)
         {
-            Debug.Log($"[AI] Using discard card to replace index {matchIndex}.");
-            grid.ReplaceCard(matchIndex, deck.TakeDiscardCard());
-            EnsureFaceUp(matchIndex);
+            Debug.Log($"[AI] Completing third vertical match using discard card.");
+            grid.ReplaceCard(thirdMatchIndex, deck.TakeDiscardCard());
+            EnsureFaceUp(thirdMatchIndex);
+            EndAITurn();
+            yield break;
         }
-        else
+
+        // --- fallback: draw a card
+        string drawn = deck.DrawCard();
+        Debug.Log($"[AI] Drew card: {drawn}");
+
+        // 🧠 Step 1 (continued): Complete third match with DRAWN card
+        thirdMatchIndex = analyzer.FindThirdMatchColumn(gridCards, drawn);
+        if (thirdMatchIndex != -1)
         {
-            string drawn = deck.DrawCard();
-            Debug.Log($"[AI] Drew card: {drawn}");
-
-            int highIndex = grid.FindHighestPointFaceUp();
-
-            // ✅ FIXED: Use gridCards.Count here too
-            if (highIndex != -1 && highIndex < gridCards.Count())
-            {
-                var candidate = gridCards[highIndex];
-
-                if (IsWorthReplacing(candidate, drawn))
-                {
-                    Debug.Log($"[AI] Replacing card at index {highIndex} with drawn card.");
-                    grid.ReplaceCard(highIndex, drawn);
-                    EnsureFaceUp(highIndex);
-                }
-                else
-                {
-                    Debug.Log("[AI] Drawn card not worth keeping — discarding it.");
-                    deck.PlaceInDiscardPile(drawn);
-                }
-            }
-            else
-            {
-                Debug.Log("[AI] No valid face-up card to replace — discarding drawn card.");
-                deck.PlaceInDiscardPile(drawn);
-            }
+            Debug.Log($"[AI] Completing third vertical match using drawn card.");
+            grid.ReplaceCard(thirdMatchIndex, drawn);
+            EnsureFaceUp(thirdMatchIndex);
+            EndAITurn();
+            yield break;
         }
+
+        // [Step 2 and beyond will be added here in future steps]
 
         Debug.Log("[AI] Ending AI turn.");
+        deck.PlaceInDiscardPile(drawn); // fallback discard
         FindFirstObjectByType<TurnCoordinator>()?.EndAITurn();
     }
 
@@ -93,5 +81,11 @@ public class AITurnController : MonoBehaviour
             model.IsFaceUp = true;
             controller.FlipCard();
         }
+    }
+    private void EndAITurn()
+    {
+        Debug.Log("[AI] Ending AI turn.");
+        deck.PlaceInDiscardPile(deck.DrawCard());
+        FindFirstObjectByType<TurnCoordinator>()?.EndAITurn();
     }
 }
