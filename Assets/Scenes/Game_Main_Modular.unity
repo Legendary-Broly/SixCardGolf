@@ -1897,30 +1897,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2184760272856804467, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
-      propertyPath: m_text
-      value: Deck
-      objectReference: {fileID: 0}
-    - target: {fileID: 2184760272856804467, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
-      propertyPath: m_fontSize
-      value: 34.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 2184760272856804467, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
-      propertyPath: m_fontSizeMax
-      value: 36
-      objectReference: {fileID: 0}
-    - target: {fileID: 2184760272856804467, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
-      propertyPath: m_fontSizeMin
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 2184760272856804467, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
-      propertyPath: m_enableAutoSizing
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 436152532612179051, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
-    - {fileID: 2514600889294163075, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
@@ -4098,26 +4076,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2184760272856804467, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
-      propertyPath: m_fontSize
-      value: 32.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2184760272856804467, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
-      propertyPath: m_fontSizeMax
-      value: 36
-      objectReference: {fileID: 0}
-    - target: {fileID: 2184760272856804467, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
-      propertyPath: m_fontSizeMin
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 2184760272856804467, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
-      propertyPath: m_enableAutoSizing
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 436152532612179051, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
-    - {fileID: 2514600889294163075, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 48d8b80c0abefcc42b652ab97b907118, type: 3}
