@@ -16,12 +16,15 @@ public class ScoreManager : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log("[ScoreManager] Update called. Calculating score.");
         int score = CalculateScore();
+        Debug.Log($"[ScoreManager] Calculated score: {score}");
         scoreText.text = "Score: " + score;
     }
 
     private int CalculateScore()
     {
+        Debug.Log("[ScoreManager] Starting score calculation.");
         int total = 0;
 
         for (int col = 0; col < 3; col++)
@@ -29,14 +32,24 @@ public class ScoreManager : MonoBehaviour
             CardBehavior top = gridCards[col];
             CardBehavior bottom = gridCards[col + 3];
 
+            Debug.Log($"[ScoreManager] Evaluating column {col}: RawTopCard={top.cardValue}, RawBottomCard={bottom.cardValue}");
+
+            // Normalize values for comparison
+            string topValueNormalized = top.cardValue?.Trim().ToUpper();
+            string bottomValueNormalized = bottom.cardValue?.Trim().ToUpper();
+
+            Debug.Log($"[ScoreManager] Normalized values for column {col}: TopCardNormalized={topValueNormalized}, BottomCardNormalized={bottomValueNormalized}");
+
             bool bothFaceUp = top.isFaceUp && bottom.isFaceUp;
-            bool match = top.cardValue == bottom.cardValue;
+            bool match = (topValueNormalized == bottomValueNormalized) ||
+                         (topValueNormalized == "JOKER" || bottomValueNormalized == "JOKER");
+
+            Debug.Log($"[ScoreManager] Match condition for column {col}: BothFaceUp={bothFaceUp}, Match={match}");
 
             if (bothFaceUp && match)
             {
-                // Skip this column as it is a matched pair
                 Debug.Log($"[ScoreManager] Matched column detected at index {col}: Top={top.cardValue}, Bottom={bottom.cardValue}");
-                continue;
+                continue; // Skip adding points for matched columns
             }
 
             if (top.isFaceUp && cardPoints.ContainsKey(top.cardValue))

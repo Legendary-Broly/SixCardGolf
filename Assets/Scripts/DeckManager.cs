@@ -62,13 +62,11 @@ public class DeckManager : MonoBehaviour, IDeckSystem
     {
         if (isDiscardPileLocked)
         {
-            Debug.LogWarning("[DeckManager] TakeDiscardCard() failed — discard pile is locked.");
             return null;
         }
 
         if (discardPile.Count == 0)
         {
-            Debug.LogWarning("[DeckManager] TakeDiscardCard() failed — discard pile is empty.");
             return null;
         }
 

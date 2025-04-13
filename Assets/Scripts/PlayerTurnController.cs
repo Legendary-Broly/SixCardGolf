@@ -60,7 +60,6 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
         drawnCard = deck.PeekTopDiscard(); // Only peek — don't pop yet
         if (string.IsNullOrEmpty(drawnCard))
         {
-            Debug.LogWarning("[Player] Tried to take discard, but pile was empty.");
             return;
         }
 
@@ -96,13 +95,6 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
 
         if (hasDrawn && !string.IsNullOrEmpty(drawnCard))
         {
-            // Ensure the card being taken matches the displayed discard card
-            string topDiscard = deck.PeekTopDiscard();
-            if (topDiscard != drawnCard)
-            {
-                Debug.LogError($"[PlayerTurnController] Mismatch detected! Displayed discard card: {drawnCard}, Actual top discard: {topDiscard}");
-            }
-
             // Swap logic
             var outgoing = grid.GetCardModels()[index].Value;
 

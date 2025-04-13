@@ -16,7 +16,6 @@ public class CardController : MonoBehaviour, IPointerClickHandler
 
     public void Initialize(string value, bool isFaceUp, ICardInteractionHandler handler)
     {
-        Debug.Log($"[CardController] Initialize called with value: {value}, isFaceUp: {isFaceUp}");
         Model = new CardModel(value, isFaceUp);
         interactionHandler = handler;
         view.UpdateVisual(Model);
@@ -52,7 +51,6 @@ public class CardController : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log($"[OnPointerClick] Card clicked and flipped. Now face up? {!IsFaceUp}");
         interactionHandler?.HandleCardClick(this);
     }
 }

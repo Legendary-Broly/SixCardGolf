@@ -261,12 +261,50 @@ public class AIManager : MonoBehaviour
 
     private int CalculateGridScore()
     {
+        Debug.Log("[AIManager] Starting grid score calculation.");
         int score = 0;
-        foreach (CardBehavior card in aiCards)
+
+        for (int col = 0; col < 3; col++)
         {
-            if (card.isFaceUp)
-                score += GetCardScore(card.cardValue);
+            CardBehavior top = aiCards[col];
+            CardBehavior bottom = aiCards[col + 3];
+
+            Debug.Log($"[AIManager] Evaluating column {col}: RawTopCard={top.cardValue}, RawBottomCard={bottom.cardValue}");
+
+            // Normalize values for comparison
+            string topValueNormalized = top.cardValue?.Trim().ToUpper();
+            string bottomValueNormalized = bottom.cardValue?.Trim().ToUpper();
+
+            Debug.Log($"[AIManager] Normalized values for column {col}: TopCardNormalized={topValueNormalized}, BottomCardNormalized={bottomValueNormalized}");
+
+            bool bothFaceUp = top.isFaceUp && bottom.isFaceUp;
+            bool match = (topValueNormalized == bottomValueNormalized) ||
+                         (topValueNormalized == "JOKER" || bottomValueNormalized == "JOKER");
+
+            Debug.Log($"[AIManager] Match condition for column {col}: BothFaceUp={bothFaceUp}, Match={match}");
+
+            if (bothFaceUp && match)
+            {
+                Debug.Log($"[AIManager] Matched column detected at index {col}: Top={top.cardValue}, Bottom={bottom.cardValue}");
+                continue; // Skip adding points for matched columns
+            }
+
+            if (top.isFaceUp && cardPoints.ContainsKey(top.cardValue))
+            {
+                int topValue = cardPoints[top.cardValue];
+                Debug.Log($"[AIManager] Adding top card value at column {col}: {top.cardValue} = {topValue}");
+                score += topValue;
+            }
+
+            if (bottom.isFaceUp && cardPoints.ContainsKey(bottom.cardValue))
+            {
+                int bottomValue = cardPoints[bottom.cardValue];
+                Debug.Log($"[AIManager] Adding bottom card value at column {col}: {bottom.cardValue} = {bottomValue}");
+                score += bottomValue;
+            }
         }
+
+        Debug.Log($"[AIManager] Total grid score: {score}");
         return score;
     }
 

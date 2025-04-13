@@ -188,18 +188,24 @@ public class CardManager : MonoBehaviour
 
     public void NotifyPlayerCardFlipped()
     {
+        Debug.Log("[CardManager] NotifyPlayerCardFlipped called.");
         if (AllPlayerCardsFaceUp())
         {
+            Debug.Log("[CardManager] All player cards are face up. Triggering final turn.");
             TurnManager.Instance.TriggerFinalTurn();
         }
     }
 
     public void RevealAllPlayerCards()
     {
+        Debug.Log("[CardManager] RevealAllPlayerCards called.");
         foreach (CardBehavior card in allCards)
         {
             if (!card.isFaceUp)
+            {
+                Debug.Log($"[CardManager] Revealing card: {card.cardValue}");
                 card.FlipCard();
+            }
         }
     }
 
