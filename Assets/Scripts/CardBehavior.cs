@@ -28,6 +28,7 @@ public class CardBehavior : MonoBehaviour
 
     public void FlipCard()
     {
+        Debug.Log($"[CardBehavior] FlipCard called. Current isFaceUp={isFaceUp}");
         isFaceUp = true;
         UpdateCardVisual();
     }
@@ -42,6 +43,8 @@ public class CardBehavior : MonoBehaviour
 
     private void UpdateCardVisual()
     {
+        Debug.Log($"[CardBehavior] UpdateCardVisual called. isFaceUp={isFaceUp}, cardValue={cardValue}");
+
         if (isFaceUp)
         {
             cardFaceImage.color = Color.white;
