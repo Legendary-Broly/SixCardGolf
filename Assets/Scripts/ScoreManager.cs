@@ -34,17 +34,27 @@ public class ScoreManager : MonoBehaviour
 
             if (bothFaceUp && match)
             {
-                // Cancelled vertical pair
+                // Skip this column as it is a matched pair
+                Debug.Log($"[ScoreManager] Matched column detected at index {col}: Top={top.cardValue}, Bottom={bottom.cardValue}");
                 continue;
             }
 
             if (top.isFaceUp && cardPoints.ContainsKey(top.cardValue))
-                total += cardPoints[top.cardValue];
+            {
+                int topValue = cardPoints[top.cardValue];
+                Debug.Log($"[ScoreManager] Adding top card value at column {col}: {top.cardValue} = {topValue}");
+                total += topValue;
+            }
 
             if (bottom.isFaceUp && cardPoints.ContainsKey(bottom.cardValue))
-                total += cardPoints[bottom.cardValue];
+            {
+                int bottomValue = cardPoints[bottom.cardValue];
+                Debug.Log($"[ScoreManager] Adding bottom card value at column {col}: {bottom.cardValue} = {bottomValue}");
+                total += bottomValue;
+            }
         }
 
+        Debug.Log($"[ScoreManager] Total score calculated: {total}");
         return total;
     }
 }
