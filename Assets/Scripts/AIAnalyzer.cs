@@ -186,4 +186,22 @@ public class AIAnalyzer
         return (existingVal - incomingVal) >= threshold;
     }
 
+    public bool CanFlipCardSafely(List<CardModel> cards, int index)
+    {
+        if (index < 0 || index >= cards.Count || cards[index].IsFaceUp)
+            return false;
+
+        // Simulate flipping the card
+        var simulatedCard = cards[index];
+        simulatedCard.IsFaceUp = true;
+
+        // Check if flipping improves score or matches
+        int currentScore = CalculateGridScore(cards.ToArray());
+        int newScore = CalculateGridScore(cards.ToArray());
+
+        // Restore original state
+        simulatedCard.IsFaceUp = false;
+
+        return newScore >= currentScore;
+    }
 }

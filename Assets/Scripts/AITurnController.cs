@@ -13,6 +13,8 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
     private IDeckSystem deck;
     private AIAnalyzer analyzer = new();
     private string drawnCard;
+    private bool gameStarted = false;
+    private bool isAITurnActive = false;
 
     private void Awake()
     {
@@ -22,16 +24,40 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
 
     private void OnEnable()
     {
-        GameEvents.OnDiscardPileUpdated += StartAITurn;
+        GameEvents.OnDiscardPileUpdated += HandleDiscardPileUpdated;
     }
 
     private void OnDisable()
     {
-        GameEvents.OnDiscardPileUpdated -= StartAITurn;
+        GameEvents.OnDiscardPileUpdated -= HandleDiscardPileUpdated;
+    }
+
+    public void StartGame()
+    {
+        gameStarted = true;
+    }
+
+    private void HandleDiscardPileUpdated()
+    {
+        if (!gameStarted)
+        {
+            Debug.Log("[AITurnController] Ignoring discard pile update before game start.");
+            return;
+        }
+
+        StartAITurn();
     }
 
     public void StartAITurn()
     {
+        if (isAITurnActive)
+        {
+            Debug.LogWarning("[AITurnController] StartAITurn called while AI turn is already active.");
+            return;
+        }
+
+        isAITurnActive = true;
+        Debug.Log("[AITurnController] StartAITurn called.");
         Debug.Log("[AI] Starting AI turn...");
         StartCoroutine(ExecuteTurn());
     }
@@ -43,6 +69,12 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
         var gridCards = grid.GetCardModels().ToList();
         string discardValue = deck.PeekTopDiscard();
         Debug.Log($"[AI] Grid has {gridCards.Count} cards. Top of discard: {discardValue}");
+
+        Debug.Log("[AITurnController] Analyzer instance: " + (analyzer != null ? "Initialized" : "Null"));
+        Debug.Log("[AITurnController] GridCards type: " + gridCards.GetType());
+
+        Debug.Log("[AI Decision] Evaluating whether to draw a card. Current grid state: " + string.Join(", ", gridCards.Select(card => card.Value)));
+        Debug.Log("[AI Decision] Top of discard pile: " + discardValue);
 
         List<int> matchedIndices = analyzer.GetMatchedColumnIndices(gridCards);
 
@@ -142,19 +174,27 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
             yield break;
         }
 
-        // Step 6: Flip a card
+        // Ensure AI only draws from the draw pile if 5 out of 6 cards are face-up
         int faceUpCount = analyzer.CountFaceUpCards(gridCards);
         if (faceUpCount < 5)
         {
-            int flipIndex = analyzer.SelectRandomFaceDownIndex(gridCards);
-            if (flipIndex != -1)
-            {
-                Debug.Log("[AI] Flipping a face-down card due to no better move.");
-                FlipCard(flipIndex);
-                EndAITurn();
-                yield break;
-            }
+            Debug.Log("[AI Decision] Drawing from the draw pile is not allowed as fewer than 5 cards are face-up.");
+            yield break;
         }
+
+        // Step 6: Flip a card if fewer than 5 cards are face-up
+        int flipIndex = analyzer.SelectRandomFaceDownIndex(gridCards);
+        if (flipIndex != -1)
+        {
+            Debug.Log("[AI] Flipping a face-down card as no other moves are valid.");
+            FlipCard(flipIndex);
+            EndAITurn();
+            yield break;
+        }
+
+        Debug.Log("[AI Decision] No valid moves available. Ending turn.");
+        EndAITurn();
+        yield break;
 
         // Step 7: Fallback — discard drawn card
         Debug.Log("[AI] No suitable move. Discarding drawn card.");
@@ -222,6 +262,7 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
     private void EndAITurn()
     {
         Debug.Log("[AI] Ending AI turn.");
+        isAITurnActive = false;
         FindFirstObjectByType<TurnCoordinator>()?.EndAITurn();
     }
 

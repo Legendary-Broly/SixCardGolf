@@ -15,7 +15,9 @@ public class TurnCoordinator : MonoBehaviour
 
     public void EnableGameStart()
     {
+        Debug.Log("[TurnCoordinator] EnableGameStart called. gameStarted: " + gameStarted);
         gameStarted = true;
+        aiTurnController.StartGame();
         BeginPlayerTurn();
     }
 
@@ -32,12 +34,13 @@ public class TurnCoordinator : MonoBehaviour
 
     public void EndPlayerTurn()
     {
+        Debug.Log("[TurnCoordinator] EndPlayerTurn called. isPlayerTurn: " + isPlayerTurn + ", gameStarted: " + gameStarted);
         Debug.Log("[TurnCoordinator] EndPlayerTurn called. isFirstTurn: " + isFirstTurn + ", finalTurnTriggered: " + finalTurnTriggered + ", finalTurnInProgress: " + finalTurnInProgress);
 
         if (isFirstTurn)
         {
+            Debug.Log("[TurnCoordinator] First turn completed. Transitioning to AI turn.");
             isFirstTurn = false;
-            CurrentPhase = TurnPhase.Waiting;
             aiTurnController.StartAITurn();
             return;
         }
@@ -60,6 +63,8 @@ public class TurnCoordinator : MonoBehaviour
     public void EndAITurn()
     {
         if (!gameStarted) return;
+
+        Debug.Log("[TurnCoordinator] EndAITurn called. Transitioning to Player turn.");
 
         if (finalTurnTriggered && finalTurnInProgress)
         {

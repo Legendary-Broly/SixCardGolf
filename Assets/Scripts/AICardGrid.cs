@@ -8,7 +8,7 @@ public class AICardGrid : MonoBehaviour, ICardGrid
 
     public CardModel[] GetCardModels()
     {
-        return cardControllers.Select(c => c.Model).ToArray();
+        return cardControllers.Select(c => c.IsFaceUp ? c.Model : new CardModel(null, false)).ToArray();
     }
 
     public void ReplaceCard(int index, string newValue)

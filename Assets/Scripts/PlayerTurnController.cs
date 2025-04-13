@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Linq;
 
 public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractionHandler
 {
@@ -169,9 +170,9 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
     {
         Debug.Log("[PlayerTurnController] EndTurn called. isFirstTurn: " + isFirstTurn);
 
-        if (isFirstTurn)
+        if (isFirstTurn || (!hasDrawn && !grid.GetCardModels().Any(card => card.IsFaceUp)))
         {
-            Debug.Log("[Player] First turn cannot end prematurely.");
+            Debug.Log("[PlayerTurnController] Preventing premature turn end. isFirstTurn: " + isFirstTurn + ", hasDrawn: " + hasDrawn);
             return;
         }
 

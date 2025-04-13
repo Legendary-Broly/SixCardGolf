@@ -22,6 +22,9 @@ public class CardDealer : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log("[CardDealer] playerGrid is " + (playerGrid != null ? "initialized" : "null"));
+        Debug.Log("[CardDealer] aiGrid is " + (aiGrid != null ? "initialized" : "null"));
+
         DealToGrid(playerGrid);
         DealToGrid(aiGrid);
 
@@ -59,12 +62,25 @@ public class CardDealer : MonoBehaviour
     {
         var models = grid.GetCardModels();
         var controllers = grid.GetCardControllers();
+
+        if (models == null || controllers == null)
+        {
+            Debug.LogError("[FlipRandomCards] Card models or controllers are null. Ensure the grid is properly initialized.");
+            return;
+        }
+
         var indices = new List<int> { 0, 1, 2, 3, 4, 5 };
 
         for (int i = 0; i < count && indices.Count > 0; i++)
         {
             int idx = indices[Random.Range(0, indices.Count)];
             indices.Remove(idx);
+
+            if (models[idx] == null)
+            {
+                Debug.LogWarning($"[FlipRandomCards] Skipping null card at index {idx}.");
+                continue;
+            }
 
             models[idx].IsFaceUp = true;
             Debug.Log($"[FlipRandomCards] Flipping card at index {idx} - Value: {models[idx].Value} - Grid: {grid.GetType().Name}");
