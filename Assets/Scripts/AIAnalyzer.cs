@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class AIAnalyzer
 {
@@ -13,8 +14,14 @@ public class AIAnalyzer
     public int CalculateGridScore(CardModel[] grid)
     {
         int score = 0;
+
+        // Check for matched columns and treat them as having a value of 0
+        var matchedColumns = GetMatchedColumnIndices(grid.ToList());
         foreach (var card in grid)
         {
+            if (matchedColumns.Contains(grid.ToList().IndexOf(card)))
+                continue; // Skip matched cards
+
             if (card.IsFaceUp && cardPoints.TryGetValue(card.Value, out var val))
                 score += val;
         }
@@ -69,11 +76,14 @@ public class AIAnalyzer
             CardModel topCard = cards[top];
             CardModel bottomCard = cards[bottom];
 
-            // Check if either top or bottom is face-up and matches the incoming
+            // Declaring and initializing variables before usage
             bool topMatches = topCard.IsFaceUp && (topCard.Value == incoming || topCard.Value == "JOKER" || incoming == "JOKER");
             bool bottomMatches = bottomCard.IsFaceUp && (bottomCard.Value == incoming || bottomCard.Value == "JOKER" || incoming == "JOKER");
 
-            // If top is face-up and bottom is face-down
+            Debug.Log($"[AIAnalyzer] Evaluating column {col}: TopCard={topCard.Value}, BottomCard={bottomCard.Value}, Incoming={incoming}");
+            Debug.Log($"[AIAnalyzer] TopMatches={topMatches}, BottomMatches={bottomMatches}");
+
+            // Check if either top or bottom is face-up and matches the incoming
             if (topMatches && !bottomCard.IsFaceUp)
                 return bottom;
 

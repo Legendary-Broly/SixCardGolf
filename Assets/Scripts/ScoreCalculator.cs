@@ -41,9 +41,11 @@ public static class ScoreCalculator
             var top = cards[col];
             var bottom = cards[col + 3];
 
+            // Explicitly set matched column score to 0 and log the operation
             if (top.IsFaceUp && bottom.IsFaceUp && top.Value == bottom.Value)
             {
-                continue; // vertical match cancels
+                Debug.Log($"[ScoreCalculator] Matched column detected at index {col}: Top={top.Value}, Bottom={bottom.Value}");
+                continue; // Skip adding points for matched columns
             }
 
             if (top.IsFaceUp)

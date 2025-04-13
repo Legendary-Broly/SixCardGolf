@@ -16,6 +16,7 @@ public class CardController : MonoBehaviour, IPointerClickHandler
 
     public void Initialize(string value, bool isFaceUp, ICardInteractionHandler handler)
     {
+        Debug.Log($"[CardController] Initialize called with value: {value}, isFaceUp: {isFaceUp}");
         Model = new CardModel(value, isFaceUp);
         interactionHandler = handler;
         view.UpdateVisual(Model);

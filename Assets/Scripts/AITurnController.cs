@@ -39,6 +39,8 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
 
     private void HandleDiscardPileUpdated()
     {
+        Debug.Log("[AITurnController] Discard pile updated. Re-evaluating discard pile.");
+
         if (!gameStarted)
         {
             Debug.Log("[AITurnController] Ignoring discard pile update before game start.");
@@ -85,19 +87,41 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
             string outgoing = gridCards[thirdMatchIndex].Value;
             ReplaceCardAt(thirdMatchIndex, discardValue);
             deck.TakeDiscardCard(); // Remove from discard AFTER using
-            deck.PlaceInDiscardPile(outgoing); // New top
+
+            // Ensure the value of the swapped face-down card is placed into the discard pile
+            if (!gridCards[thirdMatchIndex].IsFaceUp)
+            {
+                Debug.Log($"[AI] Placing swapped face-down card into discard pile: {outgoing}");
+                deck.PlaceInDiscardPile(outgoing);
+                GameEvents.CardDiscarded(outgoing);
+                Debug.Log($"[DeckManager] Discard pile state after placing card: {string.Join(", ", deck.GetDiscardPileState())}");
+            }
+
+            // Ensure the outgoing card is placed into the discard pile and log the operation
+            Debug.Log($"[AI] Placing outgoing card into discard pile: {outgoing}");
+            deck.PlaceInDiscardPile(outgoing);
             GameEvents.CardDiscarded(outgoing);
+            Debug.Log($"[DeckManager] Discard pile state after placing card: {string.Join(", ", deck.GetDiscardPileState())}");
             EndAITurn();
             yield break;
         }
 
-        // Step 2: Match column with discard
-        int matchIndex = analyzer.FindMatchableColumnIndex(gridCards, discardValue);
-        if (matchIndex != -1)
+        // Step 1: Prioritize creating a match using the discard card
+        int matchableIndex = analyzer.FindMatchableColumnIndex(gridCards, discardValue);
+        if (matchableIndex != -1)
         {
-            string outgoing = gridCards[matchIndex].Value;
-            ReplaceCardAt(matchIndex, discardValue);
+            Debug.Log($"[AI Decision] Creating a match using discard card: {discardValue} at index {matchableIndex}.");
+            string outgoing = ReplaceCardAt(matchableIndex, discardValue);
             deck.TakeDiscardCard();
+
+            // Ensure the value of the swapped face-down card is placed into the discard pile
+            if (!gridCards[matchableIndex].IsFaceUp)
+            {
+                Debug.Log($"[AI] Placing swapped face-down card into discard pile: {outgoing}");
+                deck.PlaceInDiscardPile(outgoing);
+                GameEvents.CardDiscarded(outgoing);
+            }
+
             deck.PlaceInDiscardPile(outgoing);
             GameEvents.CardDiscarded(outgoing);
             EndAITurn();
@@ -111,8 +135,33 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
             string outgoing = gridCards[worstIndex].Value;
             ReplaceCardAt(worstIndex, discardValue);
             deck.TakeDiscardCard();
+
+            // Ensure the outgoing card is placed into the discard pile and log the operation
+            Debug.Log($"[AI] Placing outgoing card into discard pile: {outgoing}");
             deck.PlaceInDiscardPile(outgoing);
             GameEvents.CardDiscarded(outgoing);
+            Debug.Log($"[DeckManager] Discard pile state after placing card: {string.Join(", ", deck.GetDiscardPileState())}");
+            EndAITurn();
+            yield break;
+        }
+
+        // Ensure AI only draws from the draw pile if 5 out of 6 cards are face-up
+        int faceUpCount = analyzer.CountFaceUpCards(gridCards);
+        if (faceUpCount < 5)
+        {
+            Debug.Log("[AI Decision] Drawing from the draw pile is not allowed as fewer than 5 cards are face-up.");
+
+            // Step 6: Flip a card if fewer than 5 cards are face-up
+            int flipIndex = analyzer.SelectRandomFaceDownIndex(gridCards);
+            if (flipIndex != -1)
+            {
+                Debug.Log("[AI] Flipping a face-down card as no other moves are valid.");
+                FlipCard(flipIndex);
+                EndAITurn();
+                yield break;
+            }
+
+            Debug.Log("[AI Decision] No valid moves available. Ending turn.");
             EndAITurn();
             yield break;
         }
@@ -131,8 +180,12 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
             {
                 string outgoing = gridCards[replaceIndex].Value;
                 ReplaceCardAt(replaceIndex, drawn);
+
+                // Ensure the outgoing card is placed into the discard pile and log the operation
+                Debug.Log($"[AI] Placing outgoing card into discard pile: {outgoing}");
                 deck.PlaceInDiscardPile(outgoing);
                 GameEvents.CardDiscarded(outgoing);
+                Debug.Log($"[DeckManager] Discard pile state after placing card: {string.Join(", ", deck.GetDiscardPileState())}");
                 EndAITurn();
                 yield break;
             }
@@ -144,62 +197,60 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
         {
             string outgoing = gridCards[drawnMatchIndex].Value;
             ReplaceCardAt(drawnMatchIndex, drawn);
+
+            // Ensure the outgoing card is placed into the discard pile and log the operation
+            Debug.Log($"[AI] Placing outgoing card into discard pile: {outgoing}");
             deck.PlaceInDiscardPile(outgoing);
             GameEvents.CardDiscarded(outgoing);
+            Debug.Log($"[DeckManager] Discard pile state after placing card: {string.Join(", ", deck.GetDiscardPileState())}");
             EndAITurn();
             yield break;
         }
 
         // Step 2 (continued): Match drawn card
-        matchIndex = analyzer.FindMatchableColumnIndex(gridCards, drawn);
+        int matchIndex = analyzer.FindMatchableColumnIndex(gridCards, drawn);
         if (matchIndex != -1)
         {
             string outgoing = gridCards[matchIndex].Value;
             ReplaceCardAt(matchIndex, drawn);
+
+            // Ensure the outgoing card is placed into the discard pile and log the operation
+            Debug.Log($"[AI] Placing outgoing card into discard pile: {outgoing}");
             deck.PlaceInDiscardPile(outgoing);
             GameEvents.CardDiscarded(outgoing);
+            Debug.Log($"[DeckManager] Discard pile state after placing card: {string.Join(", ", deck.GetDiscardPileState())}");
             EndAITurn();
             yield break;
         }
 
-        // Step 5 (continued): Replace worst if drawn is better
+        // Step 5 (continued): Replace worst if drawn is better..
         worstIndex = analyzer.FindWorstReplaceableCard(gridCards, matchedIndices);
         if (worstIndex != -1 && analyzer.IsBetterByThreshold(drawn, gridCards[worstIndex].Value))
         {
             string outgoing = gridCards[worstIndex].Value;
             ReplaceCardAt(worstIndex, drawn);
+
+            // Ensure the outgoing card is placed into the discard pile and log the operation
+            Debug.Log($"[AI] Placing outgoing card into discard pile: {outgoing}");
             deck.PlaceInDiscardPile(outgoing);
             GameEvents.CardDiscarded(outgoing);
+            Debug.Log($"[DeckManager] Discard pile state after placing card: {string.Join(", ", deck.GetDiscardPileState())}");
             EndAITurn();
             yield break;
         }
 
-        // Ensure AI only draws from the draw pile if 5 out of 6 cards are face-up
-        int faceUpCount = analyzer.CountFaceUpCards(gridCards);
-        if (faceUpCount < 5)
+        // Step 7: Fallback — discard drawn card if no other moves are valid
+        if (!string.IsNullOrEmpty(drawn))
         {
-            Debug.Log("[AI Decision] Drawing from the draw pile is not allowed as fewer than 5 cards are face-up.");
-            yield break;
-        }
-
-        // Step 6: Flip a card if fewer than 5 cards are face-up
-        int flipIndex = analyzer.SelectRandomFaceDownIndex(gridCards);
-        if (flipIndex != -1)
-        {
-            Debug.Log("[AI] Flipping a face-down card as no other moves are valid.");
-            FlipCard(flipIndex);
+            Debug.Log("[AI] No suitable move. Discarding drawn card.");
+            deck.PlaceInDiscardPile(drawn);
+            GameEvents.CardDiscarded(drawn);
+            Debug.Log($"[DeckManager] Discard pile state after placing card: {string.Join(", ", deck.GetDiscardPileState())}");
             EndAITurn();
             yield break;
         }
 
         Debug.Log("[AI Decision] No valid moves available. Ending turn.");
-        EndAITurn();
-        yield break;
-
-        // Step 7: Fallback — discard drawn card
-        Debug.Log("[AI] No suitable move. Discarding drawn card.");
-        deck.PlaceInDiscardPile(drawn);
-        GameEvents.CardDiscarded(drawn);
         EndAITurn();
     }
 
@@ -218,10 +269,12 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
         GameEvents.CardDiscarded(null);
     }
 
-    public void ReplaceCardAt(int index, string value)
+    public string ReplaceCardAt(int index, string value)
     {
+        var outgoing = grid.GetCardModels()[index].Value;
         grid.ReplaceCard(index, value);
         EnsureFaceUp(index);
+        return outgoing;
     }
 
     public void DiscardDrawnCard()

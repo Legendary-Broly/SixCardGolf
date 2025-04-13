@@ -7,6 +7,7 @@ public class DeckManager : MonoBehaviour, IDeckSystem
 
     private Stack<string> drawPile = new();
     private Stack<string> discardPile = new();
+    private bool isDiscardPileLocked = false;
 
     private void Awake()
     {
@@ -59,6 +60,12 @@ public class DeckManager : MonoBehaviour, IDeckSystem
 
     public string TakeDiscardCard()
     {
+        if (isDiscardPileLocked)
+        {
+            Debug.LogWarning("[DeckManager] TakeDiscardCard() failed — discard pile is locked.");
+            return null;
+        }
+
         if (discardPile.Count == 0)
         {
             Debug.LogWarning("[DeckManager] TakeDiscardCard() failed — discard pile is empty.");
@@ -67,14 +74,31 @@ public class DeckManager : MonoBehaviour, IDeckSystem
 
         string card = discardPile.Pop();
         Debug.Log($"[DeckManager] TakeDiscardCard() returned: {card}");
+        Debug.Log($"[DeckManager] Discard pile state after taking card: {string.Join(", ", discardPile)}");
         return card;
     }
 
     public void PlaceInDiscardPile(string value)
     {
         discardPile.Push(value);
+        Debug.Log($"[DeckManager] Discard pile state after placing card: {string.Join(", ", discardPile)}");
         GameEvents.CardDiscarded(value);
         GameEvents.DiscardPileUpdated();
+    }
+
+    public void LockDiscardPile()
+    {
+        isDiscardPileLocked = true;
+    }
+
+    public void UnlockDiscardPile()
+    {
+        isDiscardPileLocked = false;
+    }
+
+    public IEnumerable<string> GetDiscardPileState()
+    {
+        return discardPile;
     }
 
     private void ShuffleDiscardIntoDraw()

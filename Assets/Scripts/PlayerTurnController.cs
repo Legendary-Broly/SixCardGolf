@@ -20,6 +20,7 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
         grid = gridRef as ICardGrid;
         deck = deckRef as IDeckSystem;
         turnCoordinator = FindFirstObjectByType<TurnCoordinator>();
+        Debug.Log($"[PlayerTurnController] Deck reference type: {deck?.GetType().Name}");
     }
 
     public void BeginTurn()
@@ -63,6 +64,8 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
             return;
         }
 
+        deck.LockDiscardPile();
+
         hasDrawn = true;
         usingDiscard = true;
         turnCoordinator.SetPhase(TurnPhase.ActionPhase);
@@ -93,6 +96,13 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
 
         if (hasDrawn && !string.IsNullOrEmpty(drawnCard))
         {
+            // Ensure the card being taken matches the displayed discard card
+            string topDiscard = deck.PeekTopDiscard();
+            if (topDiscard != drawnCard)
+            {
+                Debug.LogError($"[PlayerTurnController] Mismatch detected! Displayed discard card: {drawnCard}, Actual top discard: {topDiscard}");
+            }
+
             // Swap logic
             var outgoing = grid.GetCardModels()[index].Value;
 
@@ -160,10 +170,12 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
         EndTurn();
     }
 
-    public void ReplaceCardAt(int index, string value)
+    public string ReplaceCardAt(int index, string value)
     {
+        var outgoing = grid.GetCardModels()[index].Value;
         grid.ReplaceCard(index, value);
         GameEvents.CardDrawn("");
+        return outgoing;
     }
 
     private void EndTurn()
