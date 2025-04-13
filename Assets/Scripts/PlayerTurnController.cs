@@ -107,6 +107,7 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
 
             if (!model.IsFaceUp)
             {
+                Debug.Log($"[PlayerTurnController] Setting IsFaceUp to true for card at index {index}");
                 model.IsFaceUp = true;
                 controller.FlipCard();
             }
@@ -154,6 +155,7 @@ public class PlayerTurnController : MonoBehaviour, IGameActions, ICardInteractio
             return;
         }
 
+        Debug.Log($"[PlayerTurnController] Setting IsFaceUp to true for card at index {index}");
         model.IsFaceUp = true;
         controller.FlipCard();
 

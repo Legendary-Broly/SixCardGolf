@@ -256,6 +256,7 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
 
         if (!model.IsFaceUp)
         {
+            Debug.Log($"[AITurnController] Setting IsFaceUp to true for card at index {index}");
             model.IsFaceUp = true;
             controller.FlipCard();
         }
@@ -268,6 +269,7 @@ public class AITurnController : MonoBehaviour, IGameActions, ICardInteractionHan
 
         if (!model.IsFaceUp)
         {
+            Debug.Log($"[AITurnController] Setting IsFaceUp to true for card at index {index}");
             model.IsFaceUp = true;
             controller.FlipCard();
         }

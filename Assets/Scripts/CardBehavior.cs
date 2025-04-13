@@ -32,8 +32,10 @@ public class CardBehavior : MonoBehaviour
         UpdateCardVisual();
     }
 
+    // Add debug logs for cardValue modifications
     public void SetCardValue(string value)
     {
+        Debug.Log($"[CardBehavior] Changing cardValue from {cardValue} to {value}");
         cardValue = value;
         UpdateCardVisual();
     }
